@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://www.jq22.com/jquery/jquery-1.9.1.js"></script>
+</head>
+<body>
+<form id="login-form" action="/login" method="post">
+    用户名：<input type="text" name="username" id="username"><br/>
+    密码：<input type="password" name="password" id="password"><br>
+    <span id="errormsg"></span><br/>
+    <input type="submit" value="登录" id="click" name="submit">
+</form>
+</body>
+</html>
+<script>
+    $(function () {
+        $.ajax({
+            url: "http://localhost:8080/loginFail",
+            type: "POST",
+            dataType: "json",
+            success: function (data) {
+                console.log(data)
+                // console.log($("#errormsg"))
+                $("#errormsg").text(data.errorMessage1).css('color','#f00')
+            }
+        })
+    })
+
+</script>

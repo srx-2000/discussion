@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!--    开启对com.srx.discussion包的扫描,并排除标有Controller注解的类-->
+    <context:component-scan base-package="com.srx.discussion" >
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    <!--    加载配置文件-->
+    <context:property-placeholder location="classpath:druid.properties"/>
+    <!--    配置数据库，使用的是德鲁伊连接池-->
+    <bean class="com.alibaba.druid.pool.DruidDataSource" id="dataSource">
+        <!--   配置基础属性-->
+        <property name="username" value="${druid.username}"/>
+        <property name="password" value="${druid.password}"/>
+        <property name="url" value="${druid.url}"/>
+        <property name="driverClassName" value="${druid.driver}"/>
+        <!--配置其他属性-->
+        <property name="maxActive" value="${druid.MaxActivity}"/>
+    </bean>
+    <!--将SqlSessionFactory放入到IOC容器中，以整合mybatis框架-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sessionFactory">
+        <!--        配置数据源-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--        配置Mapper的xml-->
+        <property name="mapperLocations" value="classpath:mybatis/Mapper/*"/>
+        <!--        配置别名-->
+        <property name="typeAliasesPackage" value="com.srx.discussion.Entities"/>
+        <!--        将mybatis的配置文件加载进SqlSessionFactory中-->
+        <property name="configLocation" value="classpath:mybatis/Mybatis-Config.xml"/>
+    </bean>
+    <!--    配置Mapper的接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sessionFactory"/>
+        <property name="basePackage" value="com.srx.discussion.Mappers"/>
+    </bean>
+    <!--    配置事务管理-->
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="transactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--    开启注解事务-->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>
