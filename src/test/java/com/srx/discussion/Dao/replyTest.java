@@ -80,4 +80,9 @@ public class replyTest extends BaseTest {
         System.out.println(manId);
     }
 
+    @Test
+    public void queryReplyCountTest() {
+        Integer integer = mapper.queryReplyCount(3);
+        System.out.println(integer);
+    }
 }

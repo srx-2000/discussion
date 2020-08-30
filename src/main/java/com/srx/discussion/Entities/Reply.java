@@ -14,6 +14,7 @@ import java.util.*;
 @Component
 public class Reply implements Serializable {
     private static final long serialVersionUID = -494473321362255517L;
+    //该属性主要用于在消息列表中对用户进行检索
     private int replyId;
     private int replyMan;
     private int targetComment;
@@ -21,6 +22,7 @@ public class Reply implements Serializable {
     private String replyContext;
     private String createTime;
     private String isLive;
+    //该属性主要用作显示，也就是view层
     private String replyManUsername;
 
     public Reply(int replyMan, int targetComment, String replyContext) {

@@ -3,11 +3,15 @@ package com.srx.discussion.Controllers;
 import com.srx.discussion.Entities.Comment;
 import com.srx.discussion.Entities.Post;
 import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.UserToRole;
 import com.srx.discussion.Services.CommentService;
 import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.UserService;
+import com.srx.discussion.Services.UserToRoleService;
+import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.PropertiesLoader;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,15 +33,15 @@ import java.util.Map;
 public class CommentController {
 
     private PropertiesLoader propertiesLoader = new PropertiesLoader("message.properties");
-
     @Autowired
     private CommentService commentService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private PostService postService;
+    @Autowired
+    private UserToRoleService userToRoleService;
+
 
     @GetMapping(value = "/p")
     @ResponseBody
@@ -71,7 +75,7 @@ public class CommentController {
                     User commentUser = userService.queryUserById(commentMan);
                     map.put("commentContext", resultComment.getCommentContext());
                     map.put("targetPost", resultComment.getTargetPost());
-                    map.put("targetMan",post.getPostMan());
+                    map.put("targetMan", post.getPostMan());
                     map.put("commentMan", commentUser.getUsername());
                     map.put("commentTime", resultComment.getCreateTime());
                 } else {
@@ -87,5 +91,38 @@ public class CommentController {
 
     }
 
+    @GetMapping(value = "/dSC")
+    @ResponseBody
+    public Map<String, Object> deleteSingleComment(@RequestParam Integer postsId, @RequestParam Integer commentId, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            Integer loginUserId = user.getUserId();
+            Integer commentUserId = commentService.queryCommentManId(commentId);
+            if (loginUserId == commentUserId) {
+                map = CommonControllerUtil.CommonController(commentService, "deleteSingleComment", commentId);
+            } else {
+                if (userToRoleService.queryStatus(new UserToRole(loginUserId, postsId)) != null) {
+                    map=CommonControllerUtil.CommonController(commentService,"deleteSingleComment",commentId);
+                } else {
+                    map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
+                }
+            }
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
 
+    @GetMapping("/getCommentAndReplyCount")
+    @ResponseBody
+    public Map<String,Object> getCommentAndReplyCount(@RequestParam Integer postId){
+        Map<String,Object> map=new HashMap<>();
+        if (postService.queryPostById(postId)!=null){
+            map=CommonControllerUtil.CommonController(commentService,"queryCommentAndReplyCount",postId);
+        }else {
+            map.put("errorMessage.nofound.post",propertiesLoader.getValue("errorMessage.nofound.post"));
+        }
+        return map;
+    }
 }

@@ -4,17 +4,14 @@ import com.srx.discussion.Entities.Posts;
 import com.srx.discussion.Entities.User;
 import com.srx.discussion.Entities.UserToRole;
 import com.srx.discussion.Enums.Regex;
-import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Enums.UserRole;
-import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Mappers.PostsMapper;
-import com.srx.discussion.Mappers.UserToRoleMapper;
+import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.Services.UserService;
 import com.srx.discussion.Services.UserToRoleService;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.RegexUtil;
-import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,7 +30,7 @@ public class PostsServiceImpl implements PostsService {
     private PostsMapper postsMapper;
 
     @Autowired
-    private PostMapper postMapper;
+    private PostService postService;
 
     /**
      * 做事务的传播用,以及权限认证
@@ -95,6 +92,15 @@ public class PostsServiceImpl implements PostsService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deleteSinglePosts(int postsId) {
+        boolean flag = postService.deleteBatchPost(postsId);
+        boolean result = postsMapper.deleteSinglePosts(postsId);
+        return flag && result;
+    }
+
+
+    @Override
     public String queryStatus(Integer userId, Integer postsId) {
         if (postsMapper.queryPostsById(postsId) == null)
             ExceptionUtil.NullObjectException(postsMapper.queryPostsById(postsId));
@@ -108,39 +114,16 @@ public class PostsServiceImpl implements PostsService {
         return null;
     }
 
-
-    /**
-     * 这里有待改进，首先问题是：如果在删除贴吧的时候，必须得把帖子，评论等一起删掉，但是如果这里只对贴吧和帖子进行删除，
-     * 然后再在帖子的Service中开启事务删除评论的话，就会出现，在删除贴吧时候就已经把帖子删除并commit了，所以到删除评论的时候就找不到
-     * 相应的帖子了，也就无法对评论和回复等继续删除。也就是说这种对数据库事务的操作无法做到级联删除。
-     * 解决办法：
-     * 1. 在写完comment，reply的Service之后，在该service中分别创建实例，然后通过创建的实例调用其删除方法，对其进行删除。
-     * 这样在删除贴吧时就要对post，comment，reply这三个分别调用单独的删除方法【这里还需要对每个service中提供相应的单独删除的方法，
-     * 这样就会导致在一个service中包含多个删除操作{单独删除，事务删除}】，然后通过posts的事务，对其进行统一删除，同样的到post，comment需要做同样的操作（不推荐）
-     * 2. （还未验证可行性）给每个service中都添加事务，从reply开始，到posts结束，逐层递增事务中的删除操作。并通过spring提供的事务的传播，
-     * 对事务进行由下到上的删除。即：在对posts进行删除的时候，其方法中只是对posts记录的删除，但其中同时调用了post对post本身和comment的删除的事务。
-     * 并不断传递下去，直到reply中的事务，仅仅对自己删除即可。
-     * <p>
-     * <p>
-     * <p>
-     * 这里记得做权限认证
-     *
-     * @param postsTitle
-     * @return
-     */
+    @Override
+    public Integer queryPostManId(Integer postsId) {
+        return postsMapper.queryPostManId(postsId);
+    }
 
     @Override
-    @Transactional
-    public boolean updateIsLiveToDelete(String postsTitle) {
-        Posts deletePosts = postsMapper.queryPostsByTitle(postsTitle);
-        int deletePostsId = deletePosts.getPostsId();
-        boolean flag = postsMapper.updateIsLiveToDelete(postsTitle);
-        if (flag) {
-            boolean finish = postMapper.updateIsLiveToDeleteByPostsId(deletePostsId);
-            return finish;
-        }
-        return false;
+    public Integer queryPostsCount() {
+        return postsMapper.queryPostsCount();
     }
+
 
     @Override
     public Posts queryPostsByTitle(String postsTitle) {

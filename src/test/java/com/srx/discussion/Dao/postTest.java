@@ -44,7 +44,7 @@ public class postTest {
     }
     @Test
     public void updateIsLiveToDeleteByPostsIdTest(){
-        mapper.updateIsLiveToDeleteByPostsId(2);
+//        mapper.updateIsLiveToDeleteByPostsId(2);
     }
 
     @Test

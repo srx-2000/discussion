@@ -39,4 +39,21 @@
             where is_live=1 and posts_title like concat('%',#{blurryString},'%')
             order by posts_title asc limit #{begin},#{pageSize}
     </select>
+
+    <select id="queryPostsList" resultMap="PostsResult">
+        <include refid="baseSelect"/>
+        where is_live=1
+    </select>
+
+    <select id="queryPostsCount" resultType="Integer">
+        select count(*) from posts where is_live=1
+    </select>
+
+    <select id="queryPostManId" resultType="Integer">
+        select posts_man from posts where posts_id=#{postsId} and is_live=1
+    </select>
+
+    <update id="deleteSinglePosts">
+        update posts set is_live=0 where posts_id=#{postsId} and is_live=1
+    </update>
 </mapper>

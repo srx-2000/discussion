@@ -26,4 +26,16 @@ public class PostTest {
             System.out.println(p);
         }
     }
+
+    @Test
+    public void postSingleDeleteTest() {
+        boolean b = service.deleteSinglePost(2);
+        System.out.println(b);
+    }
+
+    @Test
+    public void deleteBatchPostTest() {
+        boolean b = service.deleteBatchPost(1);
+        System.out.println(b);
+    }
 }

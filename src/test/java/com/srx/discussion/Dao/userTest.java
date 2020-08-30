@@ -2,6 +2,7 @@ package com.srx.discussion.Dao;
 
 import com.srx.discussion.Entities.User;
 import com.srx.discussion.Mappers.UserMapper;
+import com.srx.discussion.utils.ExceptionUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +75,12 @@ public class userTest {
     public void insertUserPostsTerst(){
         Integer userId=2;
         Integer postsId=5;
+    }
 
+    @Test
+    public void Test() {
+        Integer count=-1;
+        ExceptionUtil.NumberLessThanZeroException(count);
+        System.out.println();
     }
 }

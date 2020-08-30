@@ -61,5 +61,7 @@
     <select id="queryReplyManId" resultType="Integer">
         select reply_man from reply where reply_id=#{replyId} and is_live=1
     </select>
-
+    <select id="queryReplyCount" resultType="Integer">
+        select count(*) from reply where target_comment=#{commentId} and is_live=1
+    </select>
 </mapper>

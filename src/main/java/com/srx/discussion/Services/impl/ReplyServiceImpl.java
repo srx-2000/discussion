@@ -56,14 +56,30 @@ public class ReplyServiceImpl implements ReplyService {
         return deleteSingleReply(replyId);
     }
 
+    /**
+     * 该方法主要用在commentService中进行事务的传递，用来从上到下的批量删除
+     * @param targetComment
+     * @return
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public boolean deleteBatchReply(Integer targetComment) {
-        return deleteBatchReply(targetComment);
+        return replyMapper.deleteBatchReply(targetComment);
     }
 
     @Override
     public Integer queryReplyManId(Integer replyId) {
         return replyMapper.queryReplyManId(replyId);
+    }
+
+    @Override
+    public Integer queryReplyCount(Integer commentId) {
+        if (commentMapper.queryCommentById(commentId) == null) {
+            ExceptionUtil.NullObjectException(commentMapper.queryCommentById(commentId));
+        }
+        Integer replyCount = replyMapper.queryReplyCount(commentId);
+        if (replyCount <= 0)
+            ExceptionUtil.NumberLessThanZeroException(replyCount);
+        return replyCount;
     }
 }

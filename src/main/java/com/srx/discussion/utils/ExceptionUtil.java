@@ -4,6 +4,7 @@ import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Exceptions.NullObjectException;
+import com.srx.discussion.Exceptions.NumberLessThanZeroException;
 import com.srx.discussion.Exceptions.RepeatInsertException;
 
 import javax.servlet.http.HttpServletResponse;
@@ -68,7 +69,28 @@ public class ExceptionUtil {
 
     public static void NullObjectException(Object entity) {
         if (entity == null)
-            throw new NullObjectException("Don't have the object or the object has be Soft delete",null);
+            throw new NullObjectException("Don't have the object or the object has be Soft delete", null);
+    }
+
+    static {
+        String name;
+
+
+    }
+
+    public static void NumberLessThanZeroException(Integer count) {
+        try {
+            String name = null;
+            Method method = ExceptionUtil.class.getMethod("NumberLessThanZeroException", Integer.class);
+            Parameter[] parameters = method.getParameters();
+            name = parameters[0].getName();
+            if (count <= 0) {
+                throw new NumberLessThanZeroException("you have a parameter is less than zero", name);
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

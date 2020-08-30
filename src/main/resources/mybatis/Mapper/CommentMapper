@@ -32,5 +32,26 @@
         ON u.user_id=c.comment_man
         WHERE c.target_post=#{postId} AND c.is_live=1 ORDER BY c.create_time DESC LIMIT #{begin},#{pageSize}
     </select>
-
+    <select id="queryReplyCount" resultType="Integer">
+        SELECT COUNT(*) FROM COMMENT c
+        JOIN reply r
+        ON r.target_comment=c.comment_id
+        WHERE c.target_post=#{postId} and r.is_live=1
+    </select>
+    <select id="queryCommentCount" resultType="Integer">
+        SELECT COUNT(*) FROM COMMENT c
+        WHERE c.target_post=#{postId} and is_live=1
+    </select>
+    <select id="queryCommentManId" resultType="Integer">
+        select comment_man from comment where comment_id=#{commentId} and is_live=1
+    </select>
+    <update id="deleteSingleComment">
+        update comment set is_live=0 where comment_id=#{commentId}
+    </update>
+    <update id="deleteBatchComment">
+        update comment set is_live=0 where target_post=#{postId}
+    </update>
+    <select id="queryCommentListByPostId" resultMap="CommentResult">
+        select * from comment where target_post=#{postId}
+    </select>
 </mapper>

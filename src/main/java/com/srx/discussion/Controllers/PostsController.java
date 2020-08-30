@@ -1,11 +1,15 @@
 package com.srx.discussion.Controllers;
 
+import com.fasterxml.jackson.core.json.async.NonBlockingJsonParser;
 import com.srx.discussion.Entities.Posts;
 import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.UserToRole;
 import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.Services.UserService;
+import com.srx.discussion.Services.UserToRoleService;
+import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.PropertiesLoader;
@@ -29,11 +33,11 @@ import java.util.Map;
 public class PostsController {
     @Autowired
     private PostsService postsService;
-
     @Autowired
     private UserService userService;
-
-    PropertiesLoader propertiesLoader=new PropertiesLoader("message.properties");
+    @Autowired
+    private UserToRoleService userToRoleService;
+    PropertiesLoader propertiesLoader = new PropertiesLoader("message.properties");
 
     @GetMapping(value = "/search")
     @ResponseBody
@@ -49,12 +53,23 @@ public class PostsController {
 
     @GetMapping(value = "/updatePostsName")
     @ResponseBody
-    public Map<String, Object> updatePostsName(@RequestParam int postsId, @RequestParam String newPostsTitle, HttpServletResponse response) {
+    public Map<String, Object> updatePostsName(@RequestParam int postsId, @RequestParam String newPostsTitle, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        try {
-            map = CommonControllerUtil.CommonController(postsService, "updatePostsTitle", postsId, newPostsTitle);
-        } catch (ErrorStringException e) {
-            ExceptionUtil.ResponseCatcher(response, StatusCode.NO_CONTENT, e.getMessage());
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            try {
+                int loginUser = user.getUserId();
+                Integer postsUserId = postsService.queryPostManId(postsId);
+                if (loginUser == postsUserId)
+                    map = CommonControllerUtil.CommonController(postsService, "updatePostsTitle", postsId, newPostsTitle);
+                else {
+                    map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
+                }
+            } catch (ErrorStringException e) {
+                map.put("errorMessage.errorString.postsname", propertiesLoader.getValue("errorMessage.errorString.postsname"));
+            }
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         }
         return map;
     }
@@ -77,15 +92,21 @@ public class PostsController {
         return map;
     }
 
-    @GetMapping(value = "/deletePosts")
+    @GetMapping(value = "/dSPosts")
     @ResponseBody
-    public Map<String, Object> deletePosts(@RequestParam String postsTitle, HttpServletResponse response, HttpServletRequest request) {
+    public Map<String, Object> deleteSinglePosts(@RequestParam Integer postsId, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        try {
-            User user = (User) request.getSession().getAttribute("user");
-            map = CommonControllerUtil.CommonController(postsService, "updateIsLiveToDelete", postsTitle);
-        } catch (ErrorStringException e) {
-            ExceptionUtil.ResponseCatcher(response, StatusCode.NO_CONTENT, e.getMessage());
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            Integer loginUserId = user.getUserId();
+            Integer postsUserId = postsService.queryPostManId(postsId);
+            if (loginUserId == postsUserId) {
+                map = CommonControllerUtil.CommonController(postsService, "deleteSinglePosts", postsId);
+            } else {
+                map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
+            }
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         }
         return map;
     }
@@ -149,7 +170,7 @@ public class PostsController {
             } else {
                 map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
             }
-        }else{
+        } else {
             map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         }
         return map;
@@ -159,11 +180,19 @@ public class PostsController {
     @ResponseBody
     public Map<String, Object> getRoleList(@RequestParam Integer postsId) {
         Map<String, Object> map = new HashMap<>();
-            if (postsService.queryPostsById(postsId) != null) {
-                map = CommonControllerUtil.CommonController(postsService, "queryRoleList", postsId);
-            } else {
-                map.put("errorMessage.nofound.posts", propertiesLoader.getValue("errorMessage.nofound.posts"));
-            }
+        if (postsService.queryPostsById(postsId) != null) {
+            map = CommonControllerUtil.CommonController(postsService, "queryRoleList", postsId);
+        } else {
+            map.put("errorMessage.nofound.posts", propertiesLoader.getValue("errorMessage.nofound.posts"));
+        }
+        return map;
+    }
+
+    @GetMapping(value = "/getPostsCount")
+    @ResponseBody
+    public Map<String, Object> getPostsCount() {
+        Map<String, Object> map = new HashMap<>();
+        map = CommonControllerUtil.CommonController(postsService, "queryPostsCount");
         return map;
     }
 }

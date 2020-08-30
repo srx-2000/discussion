@@ -1,9 +1,6 @@
 package com.srx.discussion.utils;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -28,15 +25,23 @@ public class PropertiesLoader {
     private void loadProperties() {
         try {
             properties = new Properties();
-            InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(propertiesName);
+//            InputStreamReader inputStreamReader =new InputStreamReader(this.getClass().getResourceAsStream(this.propertiesName));
+            InputStream inputStream=this.getClass().getClassLoader().getResourceAsStream(this.propertiesName);
             BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(inputStream));
             properties.load(bufferedReader);
+//            properties.load(inputStreamReader);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Object getValue(String key) {
-        return this.properties.getProperty(key);
+    public String getValue(String key) {
+        String value=null;
+        try {
+            value=new String(this.properties.getProperty(key).toString().getBytes(),"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return value;
     }
 }

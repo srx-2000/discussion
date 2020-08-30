@@ -6,9 +6,12 @@ import com.srx.discussion.Exceptions.NullObjectException;
 import com.srx.discussion.Mappers.CommentMapper;
 import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Services.CommentService;
+import com.srx.discussion.Services.ReplyService;
 import com.srx.discussion.utils.ExceptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
@@ -27,15 +30,34 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private PostMapper postMapper;
 
+    @Autowired
+    private ReplyService replyService;
+
     @Override
     public boolean insertComment(Comment comment) {
         return mapper.insertComment(comment);
     }
 
     @Override
-    public boolean deleteComment() {
-        return false;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deleteSingleComment(Integer commentId) {
+        boolean flag = replyService.deleteBatchReply(commentId);
+        boolean result = mapper.deleteSingleComment(commentId);
+        return result && flag;
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public boolean deleteBatchComment(Integer postId) {
+        List<Comment> comments = mapper.queryCommentListByPostId(postId);
+        for (Comment comment : comments) {
+            replyService.deleteBatchReply(comment.getCommentId());
+        }
+        boolean result = mapper.deleteBatchComment(postId);
+        Integer count = this.queryCommentAndReplyCount(postId);
+        return (count == 0) && result;
+    }
+
 
     @Override
     public Comment queryCommentById(Integer commentId) {
@@ -49,5 +71,17 @@ public class CommentServiceImpl implements CommentService {
         if (post == null)
             ExceptionUtil.NullObjectException(post);
         return mapper.paginationQueryCommentList(postId, begin, pageSize);
+    }
+
+    @Override
+    public Integer queryCommentManId(Integer commentId) {
+        return mapper.queryCommentManId(commentId);
+    }
+
+    @Override
+    public Integer queryCommentAndReplyCount(Integer postId) {
+        Integer replyCount = mapper.queryReplyCount(postId);
+        Integer commentCount = mapper.queryCommentCount(postId);
+        return replyCount + commentCount;
     }
 }

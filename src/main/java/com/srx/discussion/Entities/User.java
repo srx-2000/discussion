@@ -153,8 +153,6 @@ public class User implements Serializable {
                     ", password='" + password + '\'' +
                     ", email='" + email + '\'' +
                     ", authority='" + authority + '\'' +
-                    ", starPostsId='" + starPostsId + '\'' +
-                    ", starPostsTitle='" + starPostsTitle + '\'' +
                     ", starPostId='" + starPostId + '\'' +
                     ", starPostTitle='" + starPostTitle + '\'' +
                     '}';

@@ -9,7 +9,7 @@
         <result property="status" column="status"/>
     </resultMap>
 
-    <resultMap id="userResult" type="com.srx.discussion.Entities.User">
+    <resultMap id="UserResult" type="com.srx.discussion.Entities.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
@@ -27,7 +27,7 @@
     </resultMap>
 
     <sql id="baseSelect">
-        select * from user_to_role
+        select * from user_to_role ur
     </sql>
     <insert id="insertRole">
         insert ignore into user_to_role values(#{userId},#{postsId},#{status})
@@ -37,7 +37,7 @@
     </delete>
     <select id="queryStatus" resultMap="UserToRoleResult">
         <include refid="baseSelect"/>
-        where user_id=#{userId} and posts_id=#{postsId}
+        where ur.user_id=#{userId} and ur.posts_id=#{postsId}
     </select>
     <select id="queryPostsList" resultMap="PostsResult">
         select p.posts_id,p.posts_man,p.create_time,p.posts_title,u.status,p.is_live from user_to_role u
@@ -45,8 +45,10 @@
         on p.posts_id=u.posts_id
         where u.user_id=#{userId} and p.is_live=1
     </select>
-    <select id="queryRoleList" resultMap="userResult">
+    <select id="queryRoleList" resultMap="UserResult">
         <include refid="baseSelect"/>
+        join user u
+        on u.user_id=ur.user_id
         where posts_id=#{postsId}
     </select>
 </mapper>

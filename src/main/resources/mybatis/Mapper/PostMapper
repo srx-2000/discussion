@@ -32,4 +32,20 @@
         <include refid="baseSelect"/>
         where post_id=#{postId} and is_live=1
     </select>
+    <select id="queryPostCount" resultType="Integer">
+        select count(*) from post where posts_id=#{postsId} and is_live=1
+    </select>
+    <select id="queryPostListByPostsId" resultMap="PostResult">
+        <include refid="baseSelect"/>
+        where posts_id=#{postsId} and is_live=1
+    </select>
+    <select id="queryPostManId" resultType="Integer">
+        select post_man from post where post_id=#{postId} and is_live=1
+    </select>
+    <update id="deleteSinglePost">
+        update post set is_live=0 where post_id=#{postId} and is_live=1
+    </update>
+    <update id="deleteBatchPost">
+        update post set is_live=0 where posts_id=#{postsId} and is_live=1
+    </update>
 </mapper>

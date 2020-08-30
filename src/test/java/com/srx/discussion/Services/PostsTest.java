@@ -36,7 +36,7 @@ public class PostsTest {
 
     @Test
     public void updateIsLiveToDeleteTest() {
-        boolean flag = postsService.updateIsLiveToDelete("石荣兴2号吧");
+        boolean flag = postsService.deleteSinglePosts(11);
         System.out.println(flag);
     }
 

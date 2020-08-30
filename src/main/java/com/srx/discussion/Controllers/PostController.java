@@ -1,11 +1,15 @@
 package com.srx.discussion.Controllers;
 
+import com.srx.discussion.Entities.Comment;
 import com.srx.discussion.Entities.Post;
 import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.UserToRole;
 import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.PostsService;
+import com.srx.discussion.Services.UserToRoleService;
+import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.PropertiesLoader;
@@ -30,13 +34,14 @@ import java.util.Map;
  */
 @Controller
 public class PostController {
-    @Autowired
-    private PostService postService;
-
-    @Autowired
-    private PostsService postsService;
 
     private PropertiesLoader propertiesLoader = new PropertiesLoader("message.properties");
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private PostsService postsService;
+    @Autowired
+    private UserToRoleService userToRoleService;
 
     /**
      * 该接口用于查询贴吧，并返回该贴吧的所有帖子，已经包含了分页查询
@@ -52,7 +57,7 @@ public class PostController {
             if (postsService.queryPostsByTitle(postsName) != null) {
                 map = CommonControllerUtil.CommonController(postService, "paginationQueryPostList", postsName, currentPage, pageSize);
             } else {
-                map.put("errorMessage.nofound.posts",propertiesLoader.getValue("errorMessage.nofound.posts"));
+                map.put("errorMessage.nofound.posts", propertiesLoader.getValue("errorMessage.nofound.posts"));
             }
         } catch (ErrorStringException e) {
             ExceptionUtil.ResponseCatcher(response, StatusCode.NO_CONTENT, e.getMessage());
@@ -73,6 +78,41 @@ public class PostController {
                 map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         } catch (ErrorStringException e) {
             ExceptionUtil.ResponseCatcher(response, StatusCode.NO_CONTENT, e.getMessage());
+        }
+        return map;
+    }
+
+    @GetMapping(value = "/dSPost")
+    @ResponseBody
+    public Map<String, Object> deleteSinglePost(@RequestParam Integer postsId, @RequestParam Integer postId, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            Integer loginUserId = user.getUserId();
+            Integer postUserId = postService.queryPostManId(postId);
+            if (loginUserId == postUserId) {
+                map = CommonControllerUtil.CommonController(postService, "deleteSinglePost", postId);
+            } else {
+                if (userToRoleService.queryStatus(new UserToRole(loginUserId, postsId)) != null) {
+                    map = CommonControllerUtil.CommonController(postService, "deleteSinglePost", postId);
+                } else {
+                    map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
+                }
+            }
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/getPostCount")
+    @ResponseBody
+    public Map<String,Object> getPostCount(@RequestParam Integer postsId){
+        Map<String,Object> map=new HashMap<>();
+        if (postsService.queryPostsById(postsId)!=null){
+            map= CommonControllerUtil.CommonController(postService,"queryPostCount",postsId);
+        }else {
+            map.put("errorMessage.nofound.posts",propertiesLoader.getValue("errorMessage.nofound.posts"));
         }
         return map;
     }

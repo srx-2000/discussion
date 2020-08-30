@@ -66,4 +66,11 @@ public interface ReplyMapper {
      */
     Integer queryReplyManId(@Param(value = "replyId") Integer replyId);
 
+    /**
+     * 用于查询一条评论下的回复数目
+     * @param commentId
+     * @return
+     */
+    Integer queryReplyCount(@Param(value = "commentId") Integer commentId);
+
 }
