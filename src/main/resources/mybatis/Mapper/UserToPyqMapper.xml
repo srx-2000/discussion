@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper>
+    <resultMap id="pyqResult" type="com.srx.discussion.Entities.Pyq">
+        <id property="userId" column="user_id"/>
+        <result property="pyqContext" column="pyq_context"/>
+        <result property="createTime" column="create_time"/>
+        <result property="nickname" column="nickname"/>
+    </resultMap>
+
+    <insert id="insertPyq">
+        INSERT INTO user_to_pyq(user_id,nickname,pyq_context) VALUES(#{userId},#{nickname},#{pyqContext});
+    </insert>
+
+    <select id="queryPyqListById" resultMap="pyqResult">
+        select * from user_to_pyq where is_live=1
+    </select>
+
+    <update id="deletePyq">
+        update user_to_pyq set is_live=0 where user_id=#{userId} and create_time=#{createTime}
+    </update>
+
+</mapper>

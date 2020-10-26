@@ -1,6 +1,8 @@
 package com.srx.discussion.Controllers;
 
+import com.srx.discussion.Entities.Pyq;
 import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.UserToInfo;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.PostsService;
@@ -135,15 +137,15 @@ public class UserController {
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
             int userId = user.getUserId();
-            if(postsService.queryPostsById(postsId)!=null){
-                if (service.queryPostsIsStarStatus(userId, postsId)==null) {
+            if (postsService.queryPostsById(postsId) != null) {
+                if (service.queryPostsIsStarStatus(userId, postsId) == null) {
                     map = CommonControllerUtil.CommonController(service, "insertStarPosts", userId, postsId);
                 } else if (service.queryPostsIsStarStatus(userId, postsId).equals("1")) {
                     map.put("errorMessage.star.posts.insert", propertiesLoader.getValue("errorMessage.star.posts.insert"));
-                } else if(service.queryPostsIsStarStatus(userId, postsId).equals("0")){
+                } else if (service.queryPostsIsStarStatus(userId, postsId).equals("0")) {
                     map = CommonControllerUtil.CommonController(service, "updatePostsIsStarToLive", userId, postsId);
                 }
-            }else {
+            } else {
                 map.put("errorMessage.nofound.posts", propertiesLoader.getValue("errorMessage.nofound.posts"));
             }
         } else {
@@ -160,11 +162,11 @@ public class UserController {
         if (user != null) {
             int userId = user.getUserId();
             if (postsService.queryPostsById(postsId) != null) {
-                if (service.queryPostsIsStarStatus(userId, postsId)==null) {
+                if (service.queryPostsIsStarStatus(userId, postsId) == null) {
                     map.put("errorMessage.star.posts.delete", propertiesLoader.getValue("errorMessage.star.posts.delete"));
                 } else if (service.queryPostsIsStarStatus(userId, postsId).equals("0")) {
                     map.put("errorMessage.star.posts.delete", propertiesLoader.getValue("errorMessage.star.posts.delete"));
-                } else if (service.queryPostsIsStarStatus(userId, postsId).equals("1")){
+                } else if (service.queryPostsIsStarStatus(userId, postsId).equals("1")) {
                     map = CommonControllerUtil.CommonController(service, "updatePostsIsStarToDelete", userId, postsId);
                 }
             } else {
@@ -206,15 +208,15 @@ public class UserController {
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
             int userId = user.getUserId();
-            if(postService.queryPostById(postId)!=null){
-                if (service.queryPostIsStarStatus(userId, postId)==null) {
+            if (postService.queryPostById(postId) != null) {
+                if (service.queryPostIsStarStatus(userId, postId) == null) {
                     map = CommonControllerUtil.CommonController(service, "insertStarPost", userId, postId);
                 } else if (service.queryPostIsStarStatus(userId, postId).equals("1")) {
                     map.put("errorMessage.star.post.insert", propertiesLoader.getValue("errorMessage.star.post.insert"));
-                } else if(service.queryPostIsStarStatus(userId, postId).equals("0")){
+                } else if (service.queryPostIsStarStatus(userId, postId).equals("0")) {
                     map = CommonControllerUtil.CommonController(service, "updatePostIsStarToLive", userId, postId);
                 }
-            }else {
+            } else {
                 map.put("errorMessage.nofound.post", propertiesLoader.getValue("errorMessage.nofound.post"));
             }
         } else {
@@ -231,11 +233,11 @@ public class UserController {
         if (user != null) {
             int userId = user.getUserId();
             if (postService.queryPostById(postId) != null) {
-                if (service.queryPostIsStarStatus(userId, postId)==null) {
+                if (service.queryPostIsStarStatus(userId, postId) == null) {
                     map.put("errorMessage.star.post.delete", propertiesLoader.getValue("errorMessage.star.post.delete"));
                 } else if (service.queryPostIsStarStatus(userId, postId).equals("0")) {
                     map.put("errorMessage.star.post.delete", propertiesLoader.getValue("errorMessage.star.post.delete"));
-                } else if (service.queryPostIsStarStatus(userId, postId).equals("1")){
+                } else if (service.queryPostIsStarStatus(userId, postId).equals("1")) {
                     map = CommonControllerUtil.CommonController(service, "updatePostIsStarToDelete", userId, postId);
                 }
             } else {
@@ -264,5 +266,116 @@ public class UserController {
         return map;
     }
 
+
+    @GetMapping("/showUserInfo")
+    @ResponseBody
+    public Map<String, Object> showUserInfo(HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            int userId = user.getUserId();
+            if (service.queryUserInfoById(userId) != null) {
+                map = CommonControllerUtil.CommonController(service, "queryUserInfoById", userId);
+            } else
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/insertUserInfo")
+    @ResponseBody
+    public Map<String, Object> insertUserInfo(HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            int userId = user.getUserId();
+            UserToInfo userToInfo = new UserToInfo(userId, null, null, null, null, null, null);
+            map = CommonControllerUtil.CommonController(service, "insertUserInfo", userToInfo);
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/updateUserInfo")
+    @ResponseBody
+    public Map<String, Object> updateUserInfo(HttpServletRequest request, UserToInfo userInfo) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            int userId = user.getUserId();
+            UserToInfo userToInfo = new UserToInfo(userId, userInfo.getAddress(), userInfo.getSelfSignature(), userInfo.getAge(), userInfo.getSex(), userInfo.getAvatar(), userInfo.getNickname());
+            map = CommonControllerUtil.CommonController(service, "updateUserInfo", userToInfo);
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/showUserNickName")
+    @ResponseBody
+    public Map<String, Object> showUserNickName(HttpServletRequest request, @RequestParam Integer userId) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            if (service.queryUserNikeName(userId) != null) {
+                map = CommonControllerUtil.CommonController(service, "queryUserNikeName", userId);
+            } else
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/showPyqList")
+    @ResponseBody
+    public Map<String, Object> showPyqList(HttpServletRequest request, @RequestParam Integer userId) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            if (service.queryPyqListById(userId) != null) {
+                map = CommonControllerUtil.CommonController(service, "queryPyqListById", userId);
+            } else
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/deletePyq")
+    @ResponseBody
+    public Map<String, Object> deletePyq(HttpServletRequest request, @RequestParam Integer userId, @RequestParam String createTime) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            if (service.queryPyqListById(userId) != null) {
+                map = CommonControllerUtil.CommonController(service, "deletePyq", userId, createTime);
+            } else
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
+    @GetMapping("/insertPyq")
+    @ResponseBody
+    public Map<String, Object> insertPyq(HttpServletRequest request, Pyq pyq) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null) {
+            if (service.queryUserById(pyq.getUserId()) != null) {
+                map = CommonControllerUtil.CommonController(service, "insertPyq", pyq);
+            } else
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+        } else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
 
 }

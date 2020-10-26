@@ -1,6 +1,7 @@
 package com.srx.discussion.Mappers;
 
 import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.UserToInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -63,5 +64,46 @@ public interface UserMapper {
      * @return
      */
     User queryUserById(@Param(value = "userId") Integer userId);
+
+
+    /**
+     * 以下代码为后添加的代码，主要与其对应的实体为UserToInfo
+     * 主要作用为：对用户的一些信息的增删改查进行操作。
+     */
+
+    /**
+     * 通过用户提供的用户id对用户的信息进行查询
+     * @param userId
+     * @return
+     */
+    UserToInfo queryUserInfoById(@Param(value = "userId") Integer userId);
+
+    /**
+     * 更新用户信息
+     * @param userInfo
+     * @return
+     */
+    boolean updateUserInfo(@Param(value = "userInfo") UserToInfo userInfo);
+
+    /**
+     * 插入用户信息
+     * @param userInfo
+     * @return
+     */
+    boolean insertUserInfo(@Param(value = "userInfo") UserToInfo userInfo);
+
+    /**
+     * 用于删除该用户的信息，主要与删除用户配合进行事务操作，而本系统暂时没有注销用户的功能，所以该方法暂时用不到
+     * @param userId
+     * @return
+     */
+    boolean deleteUserInfo(@Param(value = "userId") Integer userId);
+
+    /**
+     * 通过用户id获取用户昵称
+     * @param userId
+     * @return
+     */
+    String queryUserNikeName(@Param(value = "userId") Integer userId);
 
 }

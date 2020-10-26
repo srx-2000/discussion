@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.discussion.Mappers.CommentMapper">
+    <resultMap id="CommentResult" type="com.srx.discussion.Entities.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="commentContext" column="comment_context"/>
+        <result property="commentMan" column="comment_man"/>
+        <result property="createTime" column="create_time"/>
+        <result property="targetPost" column="target_post"/>
+        <result property="isLive" column="is_live"/>
+    </resultMap>
+    <resultMap id="CommentResultWithUser" type="com.srx.discussion.Entities.Comment">
+        <id property="commentId" column="comment_id"/>
+        <result property="commentContext" column="comment_context"/>
+        <result property="commentMan" column="comment_man"/>
+        <result property="createTime" column="create_time"/>
+        <result property="targetPost" column="target_post"/>
+        <result property="commentManUsername" column="username"/>
+        <result property="isLive" column="is_live"/>
+    </resultMap>
+    <insert id="insertComment" useGeneratedKeys="true" keyColumn="comment_id" keyProperty="commentId">
+        insert into comment(comment_context,comment_man,target_post) values(#{commentContext},#{commentMan},#{targetPost})
+    </insert>
+    <select id="queryCommentById" resultMap="CommentResult">
+        select * from comment where comment_id=#{commentId} and is_live=1
+    </select>
+    <select id="paginationQueryCommentList" resultMap="CommentResultWithUser">
+        SELECT c.*,u.username FROM `comment` c
+        JOIN `user` u
+        ON u.user_id=c.comment_man
+        WHERE c.target_post=#{postId} AND c.is_live=1 ORDER BY c.create_time DESC LIMIT #{begin},#{pageSize}
+    </select>
+    <select id="queryReplyCount" resultType="Integer">
+        SELECT COUNT(*) FROM COMMENT c
+        JOIN reply r
+        ON r.target_comment=c.comment_id
+        WHERE c.target_post=#{postId} and r.is_live=1
+    </select>
+    <select id="queryCommentCount" resultType="Integer">
+        SELECT COUNT(*) FROM COMMENT c
+        WHERE c.target_post=#{postId} and is_live=1
+    </select>
+    <select id="queryCommentManId" resultType="Integer">
+        select comment_man from comment where comment_id=#{commentId} and is_live=1
+    </select>
+    <update id="deleteSingleComment">
+        update comment set is_live=0 where comment_id=#{commentId}
+    </update>
+    <update id="deleteBatchComment">
+        update comment set is_live=0 where target_post=#{postId}
+    </update>
+    <select id="queryCommentListByPostId" resultMap="CommentResult">
+        select * from comment where target_post=#{postId}
+    </select>
+</mapper>

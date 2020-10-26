@@ -5,7 +5,6 @@ import com.srx.discussion.Entities.User;
 import com.srx.discussion.Entities.UserToRole;
 import com.srx.discussion.Mappers.UserToRoleMapper;
 import com.srx.discussion.Services.UserToRoleService;
-import jdk.nashorn.internal.runtime.logging.DebugLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -59,4 +58,7 @@ public class UserToRoleServiceImpl implements UserToRoleService {
         List<User> userToRoles = mapper.queryRoleList(postsId);
         return userToRoles;
     }
+
+
+
 }

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.discussion.Mappers.UserMapper">
+    <!--user_id  username  password  email       authority  -->
+    <resultMap id="userResult" type="com.srx.discussion.Entities.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="authority" column="authority"/>
+    </resultMap>
+
+    <resultMap id="userInfoResult" type="com.srx.discussion.Entities.UserToInfo">
+        <id property="userId" column="user_id"/>
+        <result property="nikeName" column="address"/>
+        <result property="address" column="address"/>
+        <result property="selfSignature" column="self_signature"/>
+        <result property="age" column="age"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+    </resultMap>
+    <sql id="baseSelect">
+        select * from `user`
+    </sql>
+    <select id="queryUserByEmail" resultMap="userResult">
+        <include refid="baseSelect"/>
+        where email= #{email}
+    </select>
+    <insert id="insertUser" useGeneratedKeys="true" keyColumn="user_id" keyProperty="userId"
+            parameterType="com.srx.discussion.Entities.User">
+        insert ignore into user(username,password,email,authority) values (#{username},#{password},#{email},#{authority})
+    </insert>
+    <select id="queryUserAuthorityByEmail" resultType="String">
+        select authority from `user` where email=#{email}
+    </select>
+    <update id="updateUserPassword">
+        update `user` set password=#{password} where email=#{email}
+    </update>
+    <select id="login" resultMap="userResult">
+        <include refid="baseSelect"/>
+        where email=#{username} or username=#{username} and password=#{password}
+    </select>
+    <select id="verification" resultMap="userResult">
+        <include refid="baseSelect"/>
+        where username=#{uniqueId} or email=#{uniqueId}
+    </select>
+    <select id="queryUserById" resultMap="userResult">
+        <include refid="baseSelect"/>
+        where user_id=#{userId}
+    </select>
+
+    <select id="queryUserInfoById" resultMap="userInfoResult">
+        select * from user_to_info where user_id=#{userId}
+    </select>
+    <select id="queryUserNikeName" resultType="String">
+        select nickname from user_to_info where user_id=#{userId}
+    </select>
+    <update id="updateUserInfo">
+        update user_to_info set
+        <if test="address!=null">address=#{address},</if>
+        <if test="selfSignature!=null">self_signature=#{selfSignature},</if>
+        <if test="age!=null">age=#{age},</if>
+        <if test="sex!=null">sex=#{sex},</if>
+        <if test="avatar!=null">avatar=#{avatar}</if>
+        <if test="nickname!=null">nickname=#{nickname}</if>
+        where user_id=#{userId}
+    </update>
+    <insert id="insertUserInfo">
+        insert into user_to_info(
+        user_id,
+        <if test="nickname!=null">nickname,</if>
+        <if test="address!=null">address,</if>
+        <if test="selfSignature!=null">self_signature,</if>
+        <if test="age!=null">age,</if>
+        <if test="sex!=null">sex,</if>
+        <if test="avatar!=null">avatar</if>
+        ) values (
+        #{userId},
+        <if test="nickname!=null">#{nickname},</if>
+        <if test="address!=null">#{address},</if>
+        <if test="selfSignature!=null">#{selfSignature},</if>
+        <if test="age!=null">#{age},</if>
+        <if test="sex!=null">#{sex},</if>
+        <if test="avatar!=null">#{avatar}</if>
+        )
+    </insert>
+    <delete id="deleteUserInfo">
+        delete from user_to_info where user_id=#{userId}
+    </delete>
+
+
+</mapper>

@@ -1,12 +1,11 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToPost;
-import com.srx.discussion.Entities.UserToPosts;
+import com.srx.discussion.Entities.*;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Mappers.PostsMapper;
 import com.srx.discussion.Mappers.UserMapper;
+import com.srx.discussion.Mappers.UserToPyqMapper;
 import com.srx.discussion.Services.UserService;
 import com.srx.discussion.Services.UserToPostService;
 import com.srx.discussion.Services.UserToPostsService;
@@ -38,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PostMapper postMapper;
+
+    @Autowired
+    private UserToPyqMapper pyqMapper;
 
 
     @Override
@@ -247,4 +249,45 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public UserToInfo queryUserInfoById(Integer userId) {
+        return userMapper.queryUserInfoById(userId);
+    }
+
+    @Override
+    public boolean updateUserInfo(UserToInfo userInfo) {
+        return userMapper.updateUserInfo(userInfo);
+    }
+
+    @Override
+    public boolean insertUserInfo(UserToInfo userInfo) {
+        return userMapper.insertUserInfo(userInfo);
+    }
+
+    @Override
+    public boolean deleteUserInfo(Integer userId) {
+        return userMapper.deleteUserInfo(userId);
+    }
+
+    @Override
+    public String queryUserNikeName(Integer userId) {
+        return userMapper.queryUserNikeName(userId);
+    }
+
+    @Override
+    public boolean insertPyq(Pyq pyq) {
+        return pyqMapper.insertPyq(pyq);
+    }
+
+    @Override
+    public boolean deletePyq(Integer userId,String createTime) {
+        return pyqMapper.deletePyq(new Pyq(userId,createTime));
+    }
+
+    @Override
+    public List<Pyq> queryPyqListById(int userId) {
+        return pyqMapper.queryPyqListById(userId);
+    }
+
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.discussion.Mappers.UserToRoleMapper">
+    <resultMap id="UserToRoleResult" type="com.srx.discussion.Entities.UserToRole">
+        <id property="userId" column="user_id"/>
+        <id property="postsId" column="posts_id"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <resultMap id="UserResult" type="com.srx.discussion.Entities.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="authority" column="authority"/>
+    </resultMap>
+
+    <resultMap id="PostsResult" type="com.srx.discussion.Entities.Posts">
+        <id property="postsId" column="posts_id"/>
+        <result property="postsMan" column="posts_man"/>
+        <result property="createTime" column="create_time"/>
+        <result property="postsTitle" column="posts_title"/>
+        <result property="roleStatus" column="status"/>
+        <result property="isLive" column="is_live"/>
+    </resultMap>
+
+    <sql id="baseSelect">
+        select * from user_to_role ur
+    </sql>
+    <insert id="insertRole">
+        insert ignore into user_to_role values(#{userId},#{postsId},#{status})
+    </insert>
+    <delete id="deleteRole">
+        delete from user_to_role where user_id=#{userId} and posts_id=#{postsId}
+    </delete>
+    <select id="queryStatus" resultMap="UserToRoleResult">
+        <include refid="baseSelect"/>
+        where ur.user_id=#{userId} and ur.posts_id=#{postsId}
+    </select>
+    <select id="queryPostsList" resultMap="PostsResult">
+        select p.posts_id,p.posts_man,p.create_time,p.posts_title,u.status,p.is_live from user_to_role u
+        join posts p
+        on p.posts_id=u.posts_id
+        where u.user_id=#{userId} and p.is_live=1
+    </select>
+    <select id="queryRoleList" resultMap="UserResult">
+        <include refid="baseSelect"/>
+        join user u
+        on u.user_id=ur.user_id
+        where posts_id=#{postsId}
+    </select>
+</mapper>

@@ -8,3 +8,4 @@
     * maven
     * mysql
   * **前**
+    * 目前打算接入到安卓 详情请见 https://github.com/srx-2000/course/tree/backups

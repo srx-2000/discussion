@@ -1,7 +1,6 @@
 package com.srx.discussion.Mappers;
 
 import com.srx.discussion.Entities.Post;
-import javafx.geometry.Pos;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

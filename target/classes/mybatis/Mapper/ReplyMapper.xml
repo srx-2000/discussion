@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.discussion.Mappers.ReplyMapper">
+    <!--reply_id  reply_context  reply_man  create_time  is_live  -->
+    <resultMap id="replyResult" type="com.srx.discussion.Entities.Reply">
+        <id property="replyId" column="reply_id"/>
+        <result property="replyContext" column="reply_context"/>
+        <result property="replyMan" column="reply_man"/>
+        <result property="createTime" column="create_time"/>
+        <result property="targetComment" column="target_comment"/>
+        <result property="targetReply" column="target_reply"/>
+        <result property="isLive" column="is_live"/>
+    </resultMap>
+    <resultMap id="replyResultWithUser" type="com.srx.discussion.Entities.Reply">
+        <id property="replyId" column="reply_id"/>
+        <result property="replyContext" column="reply_context"/>
+        <result property="replyMan" column="reply_man"/>
+        <result property="createTime" column="create_time"/>
+        <result property="targetComment" column="target_comment"/>
+        <result property="targetReply" column="target_reply"/>
+        <result property="replyManUsername" column="username"/>
+        <result property="isLive" column="is_live"/>
+    </resultMap>
+
+    <sql id="baseSelect">
+        select * from reply
+    </sql>
+    <insert id="insertReply" useGeneratedKeys="true" keyProperty="replyId" keyColumn="reply_id">
+        insert into reply(
+        <if test="targetReply!=0">target_reply,</if>
+        reply_context,reply_man,target_comment
+        ) values (
+        <if test="targetReply!=0">#{targetReply},</if>
+        #{replyContext},#{replyMan},#{targetComment}
+        )
+    </insert>
+    <select id="paginationQueryReplyListWithComment" resultMap="replyResultWithUser">
+        SELECT r.*,u.username FROM `reply` r
+        JOIN `user` u
+        ON u.user_id=r.reply_man
+        WHERE r.target_comment=#{targetComment} AND r.is_live=1 ORDER BY r.create_time DESC LIMIT #{begin},#{pageSize}
+    </select>
+    <select id="queryReplyById" resultMap="replyResult">
+        <include refid="baseSelect"/>
+        where reply_id=#{replyId} and is_live=1
+    </select>
+    <select id="paginationQueryReplyListWithReply" resultMap="replyResultWithUser">
+        SELECT r.*,u.username FROM `reply` r
+        JOIN `user` u
+        ON u.user_id=r.reply_man
+        WHERE r.target_reply=#{targetReply} AND r.is_live=1 ORDER BY r.create_time DESC LIMIT #{begin},#{pageSize}
+    </select>
+    <update id="deleteSingleReply">
+        update reply set is_live=0 where reply_id=#{replyId} and is_live=1
+    </update>
+    <update id="deleteBatchReply">
+        update reply set is_live=0 where target_comment=#{targetComment} and is_live=1
+    </update>
+    <select id="queryReplyManId" resultType="Integer">
+        select reply_man from reply where reply_id=#{replyId} and is_live=1
+    </select>
+    <select id="queryReplyCount" resultType="Integer">
+        select count(*) from reply where target_comment=#{commentId} and is_live=1
+    </select>
+</mapper>

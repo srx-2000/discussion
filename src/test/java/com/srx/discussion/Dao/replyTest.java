@@ -3,7 +3,6 @@ package com.srx.discussion.Dao;
 import com.srx.discussion.BaseTest;
 import com.srx.discussion.Entities.Reply;
 import com.srx.discussion.Mappers.ReplyMapper;
-import org.apache.commons.math3.stat.inference.GTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

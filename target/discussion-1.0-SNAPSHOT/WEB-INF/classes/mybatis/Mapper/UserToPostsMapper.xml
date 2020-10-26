@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.srx.discussion.Mappers.UserToPostsMapper">
+    <resultMap id="UserToPostsResult" type="com.srx.discussion.Entities.UserToPosts">
+        <id property="userId" column="user_id"/>
+        <id property="postsId" column="posts_id"/>
+        <result property="starTime" column="star_time"/>
+        <result property="isStar" column="is_star"/>
+    </resultMap>
+
+    <resultMap id="userResult" type="com.srx.discussion.Entities.User">
+        <id property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="email" column="email"/>
+        <result property="authority" column="authority"/>
+        <result property="starPostsId" column="posts_id"/>
+        <result property="starPostsTitle" column="posts_title"/>
+    </resultMap>
+    <sql id="baseSelect">
+        select * from user_to_posts
+    </sql>
+    <insert id="insertStarPosts">
+        insert into user_to_posts(user_id,posts_id) values(#{userId},#{postsId})
+    </insert>
+    <update id="updateIsStarToDelete">
+        update user_to_posts set is_star=0 where user_id=#{userId} and posts_id=#{postsId}
+    </update>
+    <update id="updateIsStarToLive">
+        update user_to_posts set is_star=1 where user_id=#{userId} and posts_id=#{postsId}
+    </update>
+    <select id="queryIsStarStatus" resultType="String">
+        select is_star from user_to_posts
+        where user_id=#{userId} and posts_id=#{postsId}
+    </select>
+    <select id="queryUserStarPosts" resultMap="userResult">
+        SELECT u.*,p.posts_id,p.posts_title FROM user u
+        JOIN user_to_posts up
+        ON u.user_id=up.user_id
+        JOIN posts p
+        ON p.posts_id=up.posts_id
+        WHERE up.user_id=#{userId} AND up.is_star=1
+    </select>
+    <select id="queryUserToPostsListByUserId" resultMap="UserToPostsResult">
+        <include refid="baseSelect"/>
+        where user_id=#{userId} and is_star=1
+    </select>
+</mapper>

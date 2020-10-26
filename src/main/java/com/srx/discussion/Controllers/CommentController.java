@@ -11,7 +11,6 @@ import com.srx.discussion.Services.UserToRoleService;
 import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.PropertiesLoader;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
