@@ -1,12 +1,13 @@
 package com.srx.discussion.Controllers;
 
-import com.srx.discussion.Entities.*;
+import com.srx.discussion.Entities.base.Comment;
+import com.srx.discussion.Entities.base.Reply;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import com.srx.discussion.Services.CommentService;
 import com.srx.discussion.Services.ReplyService;
 import com.srx.discussion.Services.UserService;
 import com.srx.discussion.Services.UserToRoleService;
-import com.srx.discussion.Services.impl.ReplyServiceImpl;
-import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.PropertiesLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,25 +37,35 @@ public class ReplyContorller {
     @Autowired
     private UserToRoleService userToRoleService;
 
-
+    /**
+     * 这里之所以使用post主要是因为怕插入的参数太长，导致get无法完成，而非因为保密等原因
+     *
+     * @param replyContext
+     * @param targetComment
+     * @param request
+     * @return
+     */
     @PostMapping(value = "/ICReply")
     @ResponseBody
     public Map<String, Object> insertReply(@RequestParam String replyContext, @RequestParam Integer targetComment, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("User");
+        User user = (User) request.getSession().getAttribute("user");
         Comment comment = commentService.queryCommentById(targetComment);
         if (user != null) {
             int replyMan = user.getUserId();
             if (comment != null) {
                 Reply replyToComment = new Reply(replyMan, targetComment, replyContext);
-                boolean flag = replyService.insertReply(replyToComment);
-                if (flag) {
+                Integer replyId = replyService.insertReply(replyToComment);
+                if (replyId!=0) {
                     Reply replyResult = replyService.queryReplyById(replyToComment.getReplyId());
                     User replyUser = userService.queryUserById(replyMan);
                     map.put("replyContext", replyResult.getReplyContext());
                     map.put("targetComment", replyResult.getTargetComment());
+                    map.put("replyId",replyId);
                     map.put("targetMan", comment.getCommentMan());
-                    map.put("replyMan", replyUser.getUsername());
+                    map.put("targetManNickname", userService.queryUserNikeName(comment.getCommentMan()));
+                    map.put("replyMan",replyUser.getUserId());
+                    map.put("replyManNickname", userService.queryUserNikeName(replyUser.getUserId()));
                     map.put("createTime", replyResult.getCreateTime());
                 } else {
                     map.put("errorMessage.fail.reply", propertiesLoader.getValue("errorMessage.fail.reply"));
@@ -81,22 +92,25 @@ public class ReplyContorller {
     @ResponseBody
     public Map<String, Object> insertReply(@RequestParam String replyContext, @RequestParam Integer targetComment, @RequestParam Integer targetReply, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("User");
+        User user = (User) request.getSession().getAttribute("user");
         Comment comment = commentService.queryCommentById(targetComment);
         if (user != null) {
             int replyMan = user.getUserId();
             if (comment != null) {
                 Reply replyToReply = new Reply(replyMan, targetComment, targetReply, replyContext);
                 if (replyService.queryReplyById(targetReply) != null) {
-                    boolean flag = replyService.insertReply(replyToReply);
-                    if (flag) {
+                    Integer replyId = replyService.insertReply(replyToReply);
+                    if (replyId!=0) {
                         Reply replyResult = replyService.queryReplyById(replyToReply.getReplyId());
                         User replyUser = userService.queryUserById(replyMan);
                         map.put("replyContext", replyResult.getReplyContext());
+                        map.put("replyId",replyId);
                         map.put("targetComment", replyResult.getTargetComment());
                         map.put("targetReply", replyResult.getTargetReply());
                         map.put("targetMan", comment.getCommentMan());
-                        map.put("replyMan", replyUser.getUsername());
+                        map.put("targetManNickname", userService.queryUserNikeName(comment.getCommentMan()));
+                        map.put("replyMan",replyUser.getUserId());
+                        map.put("replyManNickname", userService.queryUserNikeName(replyUser.getUserId()));
                         map.put("replyTime", replyResult.getCreateTime());
                     } else {
                         map.put("errorMessage.fail.reply", propertiesLoader.getValue("errorMessage.fail.reply"));
@@ -113,9 +127,17 @@ public class ReplyContorller {
         return map;
     }
 
+    /**
+     * 分页的展示回复
+     *
+     * @param targetComment
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
     @GetMapping(value = "/c")
     @ResponseBody
-    public Map<String, Object> getReplyList(Integer targetComment, Integer currentPage, Integer pageSize) {
+    public Map<String, Object> getReplyList(@RequestParam Integer targetComment, @RequestParam Integer currentPage, @RequestParam Integer pageSize) {
         Map<String, Object> map = new HashMap<>();
         Comment comment = commentService.queryCommentById(targetComment);
         if (comment != null) {
@@ -126,35 +148,51 @@ public class ReplyContorller {
         }
         return map;
     }
-    @GetMapping(value = "/getReplyCount")
+
+    @GetMapping(value = "/cAll")
     @ResponseBody
-    public Map<String,Object> getReplyCount(@RequestParam Integer commentId){
-        Map<String,Object> map=new HashMap<>();
-        if (commentService.queryCommentById(commentId)!=null){
-            map=CommonControllerUtil.CommonController(replyService,"queryReplyCount",commentId);
-        }else {
-            map.put("errorMessage.nofound.comment",propertiesLoader.getValue("errorMessage.nofound.comment"));
+    public Map<String, Object> getReplyList(@RequestParam Integer targetComment) {
+        Map<String, Object> map = new HashMap<>();
+        Comment comment = commentService.queryCommentById(targetComment);
+        if (comment != null) {
+            List<Reply> replyList = replyService.queryReplyListWithComment(targetComment);
+            map.put("replyList", replyList);
+        } else {
+            map.put("errorMessage.nofound.comment", propertiesLoader.getValue("errorMessage.nofound.comment"));
         }
         return map;
     }
+
+    @GetMapping(value = "/getReplyCount")
+    @ResponseBody
+    public Map<String, Object> getReplyCount(@RequestParam Integer commentId) {
+        Map<String, Object> map = new HashMap<>();
+        if (commentService.queryCommentById(commentId) != null) {
+            map = CommonControllerUtil.CommonController(replyService, "queryReplyCount", commentId);
+        } else {
+            map.put("errorMessage.nofound.comment", propertiesLoader.getValue("errorMessage.nofound.comment"));
+        }
+        return map;
+    }
+
     @GetMapping(value = "/dSR")
     @ResponseBody
-    public Map<String,Object> deleteSingleReply(@RequestParam Integer postsId,@RequestParam Integer replyId,HttpServletRequest request){
-        Map<String,Object> map=new HashMap<>();
+    public Map<String, Object> deleteSingleReply(@RequestParam Integer postsId, @RequestParam Integer replyId, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
         User user = (User) request.getSession().getAttribute("user");
-        if (user!=null){
+        if (user != null) {
             int loginUserId = user.getUserId();
             Integer replyManId = replyService.queryReplyManId(replyId);
-            if(loginUserId==replyManId){
-                map=CommonControllerUtil.CommonController(replyService,"deleteSingleReply",replyId);
-            }else {
-                if(userToRoleService.queryStatus(new UserToRole(loginUserId, postsId))!=null){
-                    map=CommonControllerUtil.CommonController(replyService,"deleteSingleReply",replyId);
-                }else {
-                    map.put("errorMessage.authority.short",propertiesLoader.getValue("errorMessage.authority.short"));
+            if (loginUserId == replyManId) {
+                map = CommonControllerUtil.CommonController(replyService, "deleteSingleReply", replyId);
+            } else {
+                if (userToRoleService.queryStatus(new UserToRole(loginUserId, postsId)) != null) {
+                    map = CommonControllerUtil.CommonController(replyService, "deleteSingleReply", replyId);
+                } else {
+                    map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
                 }
             }
-        }else {
+        } else {
             map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         }
         return map;

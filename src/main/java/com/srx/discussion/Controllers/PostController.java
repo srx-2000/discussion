@@ -1,15 +1,13 @@
 package com.srx.discussion.Controllers;
 
-import com.srx.discussion.Entities.Comment;
-import com.srx.discussion.Entities.Post;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Post;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.Services.UserToRoleService;
-import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.PropertiesLoader;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,6 +59,17 @@ public class PostController {
             ExceptionUtil.ResponseCatcher(response, StatusCode.NO_CONTENT, e.getMessage());
         }
         return map;
+    }
+
+    /**
+     * 该接口用于首页随机刷新获取贴子。
+     *
+     * @return
+     */
+    @GetMapping(value = "/fRandom")
+    @ResponseBody
+    public Map<String, Object> showAllPostLst(@RequestParam int currentPage, @RequestParam int pageSize) {
+        return CommonControllerUtil.CommonController(postService,"paginationQueryAllPostList",currentPage,pageSize);
     }
 
     @PostMapping(value = "/insertPost")

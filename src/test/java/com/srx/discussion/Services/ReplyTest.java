@@ -1,7 +1,7 @@
 package com.srx.discussion.Services;
 
 import com.srx.discussion.BaseTest;
-import com.srx.discussion.Entities.Reply;
+import com.srx.discussion.Entities.base.Reply;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

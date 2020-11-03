@@ -1,8 +1,7 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.Reply;
+import com.srx.discussion.Entities.base.Reply;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public interface ReplyMapper {
      * @param reply
      * @return
      */
-    boolean insertReply(Reply reply);
+    Integer insertReply(Reply reply);
 
     /**
      * 根据传入的commentId查询一条评论下的所有回复，包括回复的回复
@@ -73,4 +72,10 @@ public interface ReplyMapper {
      */
     Integer queryReplyCount(@Param(value = "commentId") Integer commentId);
 
+    /**
+     * 用于Android开发中展示所有回复，无论是评论的回复还是回复的回复。
+     * @param targetComment
+     * @return
+     */
+    List<Reply> queryReplyListWithComment(@Param(value = "targetComment") Integer targetComment);
 }

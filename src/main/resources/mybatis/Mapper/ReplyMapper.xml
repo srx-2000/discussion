@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.srx.discussion.Mappers.ReplyMapper">
     <!--reply_id  reply_context  reply_man  create_time  is_live  -->
-    <resultMap id="replyResult" type="com.srx.discussion.Entities.Reply">
+    <resultMap id="replyResult" type="com.srx.discussion.Entities.base.Reply">
         <id property="replyId" column="reply_id"/>
         <result property="replyContext" column="reply_context"/>
         <result property="replyMan" column="reply_man"/>
@@ -13,7 +13,7 @@
         <result property="targetReply" column="target_reply"/>
         <result property="isLive" column="is_live"/>
     </resultMap>
-    <resultMap id="replyResultWithUser" type="com.srx.discussion.Entities.Reply">
+    <resultMap id="replyResultWithUser" type="com.srx.discussion.Entities.base.Reply">
         <id property="replyId" column="reply_id"/>
         <result property="replyContext" column="reply_context"/>
         <result property="replyMan" column="reply_man"/>
@@ -64,4 +64,9 @@
     <select id="queryReplyCount" resultType="Integer">
         select count(*) from reply where target_comment=#{commentId} and is_live=1
     </select>
+    <select id="queryReplyListWithComment" resultMap="replyResult">
+        select * from reply where target_comment=#{targetComment} and is_live=1
+    </select>
+
+
 </mapper>

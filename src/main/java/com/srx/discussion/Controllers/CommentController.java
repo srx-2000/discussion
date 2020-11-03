@@ -1,14 +1,11 @@
 package com.srx.discussion.Controllers;
 
-import com.srx.discussion.Entities.Comment;
-import com.srx.discussion.Entities.Post;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
-import com.srx.discussion.Services.CommentService;
-import com.srx.discussion.Services.PostService;
-import com.srx.discussion.Services.UserService;
-import com.srx.discussion.Services.UserToRoleService;
-import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
+import com.srx.discussion.Entities.base.Comment;
+import com.srx.discussion.Entities.base.Post;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToRole;
+import com.srx.discussion.Services.*;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.PropertiesLoader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +37,10 @@ public class CommentController {
     private PostService postService;
     @Autowired
     private UserToRoleService userToRoleService;
+    @Autowired
+    private PostsService postsService;
+
+
 
 
     @GetMapping(value = "/p")
@@ -48,9 +49,21 @@ public class CommentController {
         Map<String, Object> map = new HashMap<>();
         if (postService.queryPostById(postId) != null) {
             Post post = postService.queryPostById(postId);
+            Posts posts = postsService.queryPostsById(post.getPostsId());
+            String PostNickname = userService.queryUserNikeName(post.getPostMan());
             map.put("postContext", post.getPostContext());
             map.put("postTitle", post.getPostTitle());
+            map.put("postId",post.getPostId());
+            map.put("belongPostsId",posts.getPostsId());
+            map.put("belongPostsName",posts.getPostsTitle());
+            map.put("postManNickname",PostNickname);
+            map.put("postManId",post.getPostMan());
             List<Comment> comments = commentService.paginationQueryCommentList(postId, currentPage, pageSize);
+            for (Comment comment :comments) {
+                int commentManId = comment.getCommentMan();
+                String commentNickname = userService.queryUserNikeName(commentManId);
+                comment.setCommentManUsername(commentNickname);
+            }
             map.put("commentList", comments);
         } else {
             map.put("errorMessage.nofound.post", propertiesLoader.getValue("errorMessage.nofound.post"));
@@ -73,9 +86,12 @@ public class CommentController {
                     Comment resultComment = commentService.queryCommentById(comment.getCommentId());
                     User commentUser = userService.queryUserById(commentMan);
                     map.put("commentContext", resultComment.getCommentContext());
-                    map.put("targetPost", resultComment.getTargetPost());
-                    map.put("targetMan", post.getPostMan());
-                    map.put("commentMan", commentUser.getUsername());
+                    map.put("targetPostId", resultComment.getTargetPost());
+                    map.put("targetPostTitle", postService.queryPostById(resultComment.getTargetPost()).getPostTitle());
+                    map.put("targetManId", post.getPostMan());
+                    map.put("targetManNickname", userService.queryUserNikeName(post.getPostMan()));
+                    map.put("commentManId", commentUser.getUserId());
+                    map.put("commentManNickname", userService.queryUserNikeName(commentUser.getUserId()));
                     map.put("commentTime", resultComment.getCreateTime());
                 } else {
                     map.put("errorMessage.fail.comment", propertiesLoader.getValue("errorMessage.fail.comment"));
@@ -90,6 +106,13 @@ public class CommentController {
 
     }
 
+    /**
+     * 这里的postsId是用来判断权限的，而非用于定位post的，/dSR也一样
+     * @param postsId
+     * @param commentId
+     * @param request
+     * @return
+     */
     @GetMapping(value = "/dSC")
     @ResponseBody
     public Map<String, Object> deleteSingleComment(@RequestParam Integer postsId, @RequestParam Integer commentId, HttpServletRequest request) {

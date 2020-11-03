@@ -1,8 +1,8 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

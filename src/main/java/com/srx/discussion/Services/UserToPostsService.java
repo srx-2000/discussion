@@ -1,8 +1,7 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToPosts;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToPosts;
 
 import java.util.List;
 

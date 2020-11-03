@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="discussion-1.0-SNAPSHOT.war">
+    <root id="archive" name="discussion-1.war">
       <element id="artifact" artifact-name="discussion:war exploded" />
     </root>
   </artifact>

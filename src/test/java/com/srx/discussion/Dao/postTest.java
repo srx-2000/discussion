@@ -1,6 +1,6 @@
 package com.srx.discussion.Dao;
 
-import com.srx.discussion.Entities.Post;
+import com.srx.discussion.Entities.base.Post;
 import com.srx.discussion.Mappers.PostMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;

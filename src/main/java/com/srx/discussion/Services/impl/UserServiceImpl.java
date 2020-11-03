@@ -1,6 +1,9 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.*;
+import com.srx.discussion.Entities.base.Post;
+import com.srx.discussion.Entities.base.Pyq;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.*;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Mappers.PostsMapper;
@@ -13,7 +16,10 @@ import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.RegexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,13 +36,13 @@ public class UserServiceImpl implements UserService {
     private PostsMapper postsMapper;
 
     @Autowired
+    private PostMapper postMapper;
+
+    @Autowired
     private UserToPostsService userToPostsService;
 
     @Autowired
     private UserToPostService userToPostService;
-
-    @Autowired
-    private PostMapper postMapper;
 
     @Autowired
     private UserToPyqMapper pyqMapper;
@@ -50,13 +56,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean insertUser(User user) {
         if (user != null) {
             if (RegexUtil.commonRegex(Regex.USERNAME, user.getUsername()))
                 ExceptionUtil.ErrorStringException(Regex.USERNAME, user.getUsername(), "insertUser");
             else if (RegexUtil.commonRegex(Regex.EMAIL, user.getEmail()))
                 ExceptionUtil.ErrorStringException(Regex.EMAIL, user.getEmail(), "insertUser");
-            return userMapper.insertUser(user);
+            userMapper.insertUser(user);
+            int userId = user.getUserId();
+            boolean flag = userMapper.insertUserInfo(new UserToInfo(user.getUserId(), null, null, null, null, null, null));
+            return flag;
         }
         return false;
     }
@@ -68,10 +78,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUserPassword(User user) {
-        if (user != null) {
-            if (RegexUtil.commonRegex(Regex.PASSWORD, user.getPassword()))
-                ExceptionUtil.ErrorStringException(Regex.PASSWORD, user.getPassword(), "updateUserPassword");
-        }
+//        if (user != null) {
+//            if (RegexUtil.commonRegex(Regex.PASSWORD, user.getPassword()))
+//                ExceptionUtil.ErrorStringException(Regex.PASSWORD, user.getPassword(), "updateUserPassword");
+//        }
         return userMapper.updateUserPassword(user);
     }
 
@@ -102,6 +112,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean insertStarPosts(Integer userId, Integer postsId) {
         if (userMapper.queryUserById(userId) != null && postsMapper.queryPostsById(postsId) != null) {
             boolean b = userToPostsService.insertStarPosts(userId, postsId);
@@ -158,6 +169,22 @@ public class UserServiceImpl implements UserService {
         if (userMapper.queryUserById(userId) != null) {
             List<User> list = userToPostsService.queryUserStarPosts(userId);
             return list;
+        } else {
+            ExceptionUtil.NullObjectException(userMapper.queryUserById(userId));
+        }
+        return null;
+    }
+
+    @Override
+    public List<StartPosts> queryUserStarPostsForAndroid(Integer userId) {
+        if (userMapper.queryUserById(userId) != null) {
+            List<User> list = userToPostsService.queryUserStarPosts(userId);
+            List<StartPosts> postsList = new ArrayList<>();
+            for (User user : list) {
+                int id = user.getUserId();
+                postsList.add(new StartPosts(id, this.queryUserNikeName(id), user.getStarPostsTitle(), user.getStarPostsId()));
+            }
+            return postsList;
         } else {
             ExceptionUtil.NullObjectException(userMapper.queryUserById(userId));
         }
@@ -240,6 +267,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<StartPost> queryUserStarPostForAndroid(Integer userId) {
+        if (userMapper.queryUserById(userId) != null) {
+            List<User> list = userToPostService.queryUserStarPost(userId);
+            List<StartPost> postList = new ArrayList<>();
+            for (User u : list) {
+                int id = u.getUserId();
+                Post post = postMapper.queryPostById(Integer.valueOf(u.getStarPostId()));
+                String postsTitle = postsMapper.queryPostsById(post.getPostsId()).getPostsTitle();
+                postList.add(new StartPost(id,this.queryUserNikeName(id),postsTitle,post.getPostsId(),post.getCreateTime(),post.getPostMan(),this.queryUserNikeName(post.getPostMan()),post.getPostContext()));
+            }
+            return postList;
+        } else {
+            ExceptionUtil.NullObjectException(userMapper.queryUserById(userId));
+        }
+        return null;
+    }
+
+    @Override
     public List<UserToPost> queryUserToPostListByUserId(Integer userId) {
         if (userMapper.queryUserById(userId) != null) {
             List<UserToPost> list = userToPostService.queryUserToPostListByUserId(userId);
@@ -281,12 +326,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean deletePyq(Integer userId,String createTime) {
-        return pyqMapper.deletePyq(new Pyq(userId,createTime));
+    public boolean deletePyq(Integer userId, String createTime) {
+        return pyqMapper.deletePyq(new Pyq(userId, createTime));
     }
 
     @Override
-    public List<Pyq> queryPyqListById(int userId) {
+    public List<Pyq> queryPyqListById(Integer userId) {
         return pyqMapper.queryPyqListById(userId);
     }
 

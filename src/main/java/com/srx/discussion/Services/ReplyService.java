@@ -1,7 +1,6 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.Reply;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.Reply;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface ReplyService {
      * @param reply
      * @return
      */
-    boolean insertReply(Reply reply);
+    Integer insertReply(Reply reply);
 
     /**
      * 根据传入的commentId查询一条评论下的所有回复，包括回复的回复
@@ -26,6 +25,13 @@ public interface ReplyService {
      * @return
      */
     List<Reply> paginationQueryReplyListWithComment(Integer targetComment, Integer currentPage,Integer pageSize);
+
+    /**
+     * 用于Android展示所有回复
+     * @param targetComment
+     * @return
+     */
+    List<Reply> queryReplyListWithComment(Integer targetComment);
 
     /**
      * 根据id查询指定的reply

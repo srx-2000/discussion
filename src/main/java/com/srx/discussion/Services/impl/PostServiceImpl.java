@@ -1,12 +1,15 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.Post;
-import com.srx.discussion.Entities.Posts;
+import com.srx.discussion.Entities.base.Post;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.hybrid.HybridPost;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Mappers.PostsMapper;
 import com.srx.discussion.Services.CommentService;
 import com.srx.discussion.Services.PostService;
+import com.srx.discussion.Services.PostsService;
+import com.srx.discussion.Services.UserService;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.RegexUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +35,12 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PostsService postsService;
 
     @Override
     public boolean insertPost(Post post) {
@@ -65,14 +75,33 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<Post> paginationQueryPostList(String postsName, Integer currentPage, Integer pageSize) {
         Posts posts = postsMapper.queryPostsByTitle(postsName);
         if (posts == null)
             ExceptionUtil.NullObjectException(posts);
         int postsId = posts.getPostsId();
         int begin = (currentPage - 1) * pageSize;
-        return postMapper.paginationQueryPostList(postsId, begin, pageSize);
+        List<Post> postList = postMapper.paginationQueryPostList(postsId, begin, pageSize);
+        return postList;
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<HybridPost> paginationQueryAllPostList(Integer currentPage, Integer pageSize) {
+        int begin = (currentPage - 1) * pageSize;
+        ArrayList<HybridPost> hybridPostList = new ArrayList<>();
+        List<Post> postList = postMapper.paginationQueryAllPostList(begin, pageSize);
+        for (Post post : postList) {
+            String nickname = userService.queryUserNikeName(post.getPostMan());
+            String postsTitle = postsService.queryPostsById(post.getPostsId()).getPostsTitle();
+            Integer commentAndReplyCount = commentService.queryCommentAndReplyCount(post.getPostId());
+            HybridPost hybridPost = new HybridPost(post.getPostId(), post.getPostMan(), post.getPostsId(), post.getPostContext(), post.getCreateTime(), post.getPostTitle(), nickname, postsTitle, commentAndReplyCount, post.getIsLive());
+            hybridPostList.add(hybridPost);
+        }
+        return hybridPostList;
+    }
+
 
     @Override
     public Post queryPostById(Integer postId) {

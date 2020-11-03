@@ -1,6 +1,6 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.Comment;
+import com.srx.discussion.Entities.base.Comment;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

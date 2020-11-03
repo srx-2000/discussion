@@ -1,9 +1,8 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToInfo;
 
 import java.util.List;
 
@@ -89,7 +88,7 @@ public interface PostsService {
      * @param postsId
      * @return
      */
-    List<User> queryRoleList(Integer postsId);
+    List<UserToInfo> queryRoleList(Integer postsId);
 
     /**
      * 该方法主要是提供用户查询一个某用户（一般是自己）所有拥有特殊角色的贴吧。返回的对象为一个posts和userToRole联合查询的结果的list

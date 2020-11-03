@@ -115,12 +115,13 @@ create table user_to_info
 ) engine = innodb
   default charset = utf8 comment ='用户信息表';
 
-create table user_to_pyq
+CREATE TABLE user_to_pyq
 (
-    user_id       int           not null,
-    pyq_context   varchar(2550) not null comment '动态内容',
-    create_time   TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '动态发布时间',
-    nickname varchar(255)  not null comment '发布用户昵称',
+    user_id     INT           NOT NULL,
+    pyq_context VARCHAR(2550) NOT NULL COMMENT '动态内容',
+    create_time TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '动态发布时间',
+    nickname    VARCHAR(255)  NOT NULL COMMENT '发布用户昵称',
+    is_live     TINYINT                DEFAULT 1 COMMENT '动态是否存在',
     FOREIGN KEY (user_id) REFERENCES `user` (user_id)
 ) ENGINE = INNODB
   DEFAULT CHARSET = utf8 COMMENT ='动态表';

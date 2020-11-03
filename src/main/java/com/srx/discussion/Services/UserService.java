@@ -1,7 +1,8 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.*;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.Pyq;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.*;
 
 import java.util.List;
 
@@ -113,6 +114,8 @@ public interface UserService {
      */
     List<User> queryUserStarPosts(Integer userId);
 
+    List<StartPosts> queryUserStarPostsForAndroid(Integer userId);
+
     /**
      * 查询所有与传入UserId相关的UserToPosts记录，暂定的主要作用在于根据提供的UserId取收藏时间
      *
@@ -164,6 +167,8 @@ public interface UserService {
      * @return
      */
     List<User> queryUserStarPost(Integer userId);
+
+    List<StartPost> queryUserStarPostForAndroid(Integer userId);
 
     /**
      * 查询所有与传入UserId相关的UserToPost记录，暂定的主要作用在于根据提供的UserId取收藏时间
@@ -246,7 +251,7 @@ public interface UserService {
      * @param userId
      * @return
      */
-    List<Pyq> queryPyqListById(int userId);
+    List<Pyq> queryPyqListById(Integer userId);
 
 
 }

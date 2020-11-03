@@ -1,8 +1,8 @@
 package com.srx.discussion.Controllers;
 
-import com.srx.discussion.Entities.Pyq;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToInfo;
+import com.srx.discussion.Entities.base.Pyq;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToInfo;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostService;
 import com.srx.discussion.Services.PostsService;
@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,8 +80,10 @@ public class UserController {
      * @return
      */
     @PostMapping(value = "/register")
-    public String registered(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam String authority, HttpServletRequest request, HttpServletResponse response) {
+    @ResponseBody
+    public Map<String, Object> registered(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam String authority, HttpServletRequest request, HttpServletResponse response) {
         User user = new User(username, password, email, authority); //通过下面方法insertUser方法的调用此时user中应该已经包含了userId的值
+        Map<String, Object> map = new HashMap<>();
         boolean flag = false;
         try {
             flag = service.insertUser(user);//在该方法的mapper中已经将useGeneratedKeys设置为true
@@ -92,13 +95,15 @@ public class UserController {
             }
         }
         if (flag) {
-            HttpSession session = request.getSession();
-            session.setMaxInactiveInterval(60 * 60 * 24);
-            session.setAttribute("user", user);
-            return "index";
+            //暂时不提供注册完了就直接登录好了的功能
+//            HttpSession session = request.getSession();
+//            session.setMaxInactiveInterval(60 * 60 * 24);
+//            session.setAttribute("user", user);
+            map.put("verificationMsg.success", propertiesLoader.getValue("verificationMsg.success"));
         } else {
-            return "register";
+            map.put("verificationMsg.fail", propertiesLoader.getValue("verificationMsg.fail"));
         }
+        return map;
     }
 
     @PostMapping(value = "/verification")
@@ -132,7 +137,7 @@ public class UserController {
 
     @GetMapping("/starPosts")
     @ResponseBody
-    public Map<String, Object> starPosts(@RequestParam Integer postsId, HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> starPosts(@RequestParam Integer postsId, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
@@ -182,22 +187,16 @@ public class UserController {
      * 该接口之所以提供UserId的参数，主要是考虑到用户查看其他用户的收藏贴吧的情况，一般的话只需要从session中取到user，并取出userId即可
      *
      * @param userId
-     * @param request
      * @return
      */
     @GetMapping("/showUserStarPosts")
     @ResponseBody
-    public Map<String, Object> showUserStarPosts(@RequestParam Integer userId, HttpServletRequest request) {
+    public Map<String, Object> showUserStarPosts(@RequestParam Integer userId) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) {
-            if (service.queryUserById(userId) != null)
-                map = CommonControllerUtil.CommonController(service, "queryUserStarPosts", userId);
-            else
-                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
-        } else {
-            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
-        }
+        if (service.queryUserById(userId) != null)
+            map = CommonControllerUtil.CommonController(service, "queryUserStarPostsForAndroid", userId);
+        else
+            map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         return map;
     }
 
@@ -251,36 +250,24 @@ public class UserController {
 
     @GetMapping("/showUserStarPost")
     @ResponseBody
-    public Map<String, Object> showUserStarPost(HttpServletRequest request) {
+    public Map<String, Object> showUserStarPost(@RequestParam Integer userId) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) {
-            int userId = user.getUserId();
-            if (service.queryUserById(userId) != null)
-                map = CommonControllerUtil.CommonController(service, "queryUserStarPost", userId);
-            else
-                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
-        } else {
-            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
-        }
+        if (service.queryUserById(userId) != null)
+            map = CommonControllerUtil.CommonController(service, "queryUserStarPostForAndroid", userId);
+        else
+            map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         return map;
     }
 
 
     @GetMapping("/showUserInfo")
     @ResponseBody
-    public Map<String, Object> showUserInfo(HttpServletRequest request) {
+    public Map<String, Object> showUserInfo(@RequestParam Integer userId) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) {
-            int userId = user.getUserId();
-            if (service.queryUserInfoById(userId) != null) {
-                map = CommonControllerUtil.CommonController(service, "queryUserInfoById", userId);
-            } else
-                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
-        } else {
-            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
-        }
+        if (service.queryUserInfoById(userId) != null) {
+            map = CommonControllerUtil.CommonController(service, "queryUserInfoById", userId);
+        } else
+            map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         return map;
     }
 
@@ -305,9 +292,14 @@ public class UserController {
         Map<String, Object> map = new HashMap<>();
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
+            int userId1 = userInfo.getUserId();
             int userId = user.getUserId();
-            UserToInfo userToInfo = new UserToInfo(userId, userInfo.getAddress(), userInfo.getSelfSignature(), userInfo.getAge(), userInfo.getSex(), userInfo.getAvatar(), userInfo.getNickname());
-            map = CommonControllerUtil.CommonController(service, "updateUserInfo", userToInfo);
+            if (userId == userId1) {
+                UserToInfo userToInfo = new UserToInfo(userId, userInfo.getAddress(), userInfo.getSelfSignature(), userInfo.getAge(), userInfo.getSex(), userInfo.getAvatar(), userInfo.getNickname());
+                map = CommonControllerUtil.CommonController(service, "updateUserInfo", userToInfo);
+            } else {
+                map.put("errorMessage.authority.short", propertiesLoader.getValue("errorMessage.authority.short"));
+            }
         } else {
             map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
         }
@@ -316,33 +308,27 @@ public class UserController {
 
     @GetMapping("/showUserNickName")
     @ResponseBody
-    public Map<String, Object> showUserNickName(HttpServletRequest request, @RequestParam Integer userId) {
+    public Map<String, Object> showUserNickName(@RequestParam Integer userId) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) {
-            if (service.queryUserNikeName(userId) != null) {
-                map = CommonControllerUtil.CommonController(service, "queryUserNikeName", userId);
-            } else
-                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
-        } else {
-            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
-        }
+        if (service.queryUserNikeName(userId) != null) {
+            map = CommonControllerUtil.CommonController(service, "queryUserNikeName", userId);
+        } else
+            map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         return map;
     }
 
     @GetMapping("/showPyqList")
     @ResponseBody
-    public Map<String, Object> showPyqList(HttpServletRequest request, @RequestParam Integer userId) {
+    public Map<String, Object> showPyqList(@RequestParam Integer userId) {
         Map<String, Object> map = new HashMap<>();
-        User user = (User) request.getSession().getAttribute("user");
-        if (user != null) {
-            if (service.queryPyqListById(userId) != null) {
-                map = CommonControllerUtil.CommonController(service, "queryPyqListById", userId);
-            } else
-                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
-        } else {
-            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
-        }
+        if (service.queryPyqListById(userId) != null) {
+            List<Pyq> pyqList = service.queryPyqListById(userId);
+            for (Pyq pyq :pyqList) {
+                pyq.setNickname(service.queryUserNikeName(pyq.getUserId()));
+            }
+            map.put("pyqList",pyqList);
+        } else
+            map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         return map;
     }
 
@@ -362,13 +348,26 @@ public class UserController {
         return map;
     }
 
+    /**
+     * 这里第一次尝试在请求参数中使用一个object的操作，据说这样可以动态的获取参数，
+     * 不用死板的必须有什么参数，具体参数的个数由请求发起者自己定
+     * 同时因为传入的是一个对象，所以不用担心内容过长而导致get请求不够用
+     *
+     * @param request
+     * @param pyqContext
+     * @return
+     */
     @GetMapping("/insertPyq")
     @ResponseBody
-    public Map<String, Object> insertPyq(HttpServletRequest request, Pyq pyq) {
+    public Map<String, Object> insertPyq(HttpServletRequest request,@RequestParam String pyqContext) {
         Map<String, Object> map = new HashMap<>();
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
-            if (service.queryUserById(pyq.getUserId()) != null) {
+            if (service.queryUserById(user.getUserId()) != null) {
+                //确保插入的用户昵称和用户的id是对应的一个人
+                Pyq pyq = new Pyq();
+                pyq.setPyqContext(pyqContext);
+                pyq.setUserId(user.getUserId());
                 map = CommonControllerUtil.CommonController(service, "insertPyq", pyq);
             } else
                 map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));

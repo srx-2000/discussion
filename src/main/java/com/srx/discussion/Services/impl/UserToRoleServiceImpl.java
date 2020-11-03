@@ -1,19 +1,16 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import com.srx.discussion.Mappers.UserToRoleMapper;
 import com.srx.discussion.Services.UserToRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author srx

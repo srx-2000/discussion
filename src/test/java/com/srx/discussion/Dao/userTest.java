@@ -1,6 +1,6 @@
 package com.srx.discussion.Dao;
 
-import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.base.User;
 import com.srx.discussion.Mappers.UserMapper;
 import com.srx.discussion.utils.ExceptionUtil;
 import org.junit.Test;

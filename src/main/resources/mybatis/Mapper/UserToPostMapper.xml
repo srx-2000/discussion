@@ -3,14 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.srx.discussion.Mappers.UserToPostMapper">
-    <resultMap id="UserToPostResult" type="com.srx.discussion.Entities.UserToPost">
+    <resultMap id="UserToPostResult" type="com.srx.discussion.Entities.hybrid.UserToPost">
         <id property="userId" column="user_id"/>
         <id property="postId" column="post_id"/>
         <result property="starTime" column="star_time"/>
         <result property="isStar" column="is_star"/>
     </resultMap>
 
-    <resultMap id="userResult" type="com.srx.discussion.Entities.User">
+    <resultMap id="userResult" type="com.srx.discussion.Entities.base.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>

@@ -1,8 +1,7 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.Comment;
-import com.srx.discussion.Entities.Post;
-import com.srx.discussion.Exceptions.NullObjectException;
+import com.srx.discussion.Entities.base.Comment;
+import com.srx.discussion.Entities.base.Post;
 import com.srx.discussion.Mappers.CommentMapper;
 import com.srx.discussion.Mappers.PostMapper;
 import com.srx.discussion.Services.CommentService;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 

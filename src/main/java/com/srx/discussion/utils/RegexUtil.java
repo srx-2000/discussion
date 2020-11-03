@@ -1,6 +1,5 @@
 package com.srx.discussion.utils;
 
-import com.srx.discussion.Entities.User;
 import com.srx.discussion.Enums.Regex;
 
 import java.util.regex.Matcher;

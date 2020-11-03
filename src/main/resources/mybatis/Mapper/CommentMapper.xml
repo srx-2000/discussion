@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.srx.discussion.Mappers.CommentMapper">
-    <resultMap id="CommentResult" type="com.srx.discussion.Entities.Comment">
+    <resultMap id="CommentResult" type="com.srx.discussion.Entities.base.Comment">
         <id property="commentId" column="comment_id"/>
         <result property="commentContext" column="comment_context"/>
         <result property="commentMan" column="comment_man"/>
@@ -11,7 +11,7 @@
         <result property="targetPost" column="target_post"/>
         <result property="isLive" column="is_live"/>
     </resultMap>
-    <resultMap id="CommentResultWithUser" type="com.srx.discussion.Entities.Comment">
+    <resultMap id="CommentResultWithUser" type="com.srx.discussion.Entities.base.Comment">
         <id property="commentId" column="comment_id"/>
         <result property="commentContext" column="comment_context"/>
         <result property="commentMan" column="comment_man"/>

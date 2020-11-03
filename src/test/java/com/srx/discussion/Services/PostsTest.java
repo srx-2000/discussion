@@ -1,7 +1,7 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Mappers.PostsMapper;

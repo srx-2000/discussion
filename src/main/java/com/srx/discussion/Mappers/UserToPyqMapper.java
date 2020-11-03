@@ -1,6 +1,6 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.Pyq;
+import com.srx.discussion.Entities.base.Pyq;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -11,7 +11,7 @@ public interface UserToPyqMapper {
      * @param pyq
      * @return
      */
-    boolean insertPyq(@Param(value = "pyq")Pyq pyq);
+    boolean insertPyq(Pyq pyq);
 
     //不提供更改朋友圈的功能
 
@@ -22,7 +22,7 @@ public interface UserToPyqMapper {
      * @param pyq
      * @return
      */
-    boolean deletePyq(@Param(value = "pyq") Pyq pyq);
+    boolean deletePyq(Pyq pyq);
 
     /**
      * 通过用户id对一个用户的所有动态进行查询，返回一个list

@@ -1,7 +1,6 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.Comment;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.Comment;
 
 import java.util.List;
 

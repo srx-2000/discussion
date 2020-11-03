@@ -1,15 +1,12 @@
 package com.srx.discussion.Controllers;
 
-import com.fasterxml.jackson.core.json.async.NonBlockingJsonParser;
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
 import com.srx.discussion.Enums.StatusCode;
 import com.srx.discussion.Exceptions.ErrorStringException;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.Services.UserService;
 import com.srx.discussion.Services.UserToRoleService;
-import com.srx.discussion.Services.impl.UserToRoleServiceImpl;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.ExceptionUtil;
 import com.srx.discussion.utils.PropertiesLoader;
@@ -142,7 +139,7 @@ public class PostsController {
 
     @GetMapping(value = "/downUserRole")
     @ResponseBody
-    public Map<String, Object> downUserRole(@RequestParam Integer downUserId, @RequestParam Integer postsId, HttpServletResponse response, HttpServletRequest request) {
+    public Map<String, Object> downUserRole(@RequestParam Integer downUserId, @RequestParam Integer postsId, HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         User user = (User) request.getSession().getAttribute("user");
         if (user != null) {
@@ -191,8 +188,6 @@ public class PostsController {
     @GetMapping(value = "/getPostsCount")
     @ResponseBody
     public Map<String, Object> getPostsCount() {
-        Map<String, Object> map = new HashMap<>();
-        map = CommonControllerUtil.CommonController(postsService, "queryPostsCount");
-        return map;
+        return CommonControllerUtil.CommonController(postsService, "queryPostsCount");
     }
 }

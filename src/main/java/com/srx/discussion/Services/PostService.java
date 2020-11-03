@@ -1,7 +1,9 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.Post;
-import org.apache.ibatis.annotations.Param;
+import com.srx.discussion.Entities.base.Post;
+import com.srx.discussion.Entities.hybrid.HybridPost;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -43,6 +45,10 @@ public interface PostService {
      * @return
      */
     List<Post> paginationQueryPostList(String postsName, Integer currentPage, Integer pageSize);
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    List<HybridPost> paginationQueryAllPostList(Integer currentPage, Integer pageSize);
 
     /**
      * 通过传入的id查找单个post

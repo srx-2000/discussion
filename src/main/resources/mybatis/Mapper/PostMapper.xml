@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.srx.discussion.Mappers.PostMapper">
-    <resultMap id="PostResult" type="com.srx.discussion.Entities.Post">
+    <resultMap id="PostResult" type="com.srx.discussion.Entities.base.Post">
         <id property="postId" column="post_id"/>
         <result property="postContext" column="post_context"/>
         <result property="postMan" column="post_man"/>
@@ -48,4 +48,8 @@
     <update id="deleteBatchPost">
         update post set is_live=0 where posts_id=#{postsId} and is_live=1
     </update>
+    <select id="paginationQueryAllPostList" resultMap="PostResult">
+        <include refid="baseSelect"/>
+        where is_live=1 order by create_time desc limit #{begin},#{pageSize}
+    </select>
 </mapper>

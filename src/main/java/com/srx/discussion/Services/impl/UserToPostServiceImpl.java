@@ -1,7 +1,7 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToPost;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToPost;
 import com.srx.discussion.Mappers.UserToPostMapper;
 import com.srx.discussion.Services.UserToPostService;
 import org.springframework.beans.factory.annotation.Autowired;

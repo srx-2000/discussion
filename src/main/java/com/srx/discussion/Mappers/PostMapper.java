@@ -1,6 +1,6 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.Post;
+import com.srx.discussion.Entities.base.Post;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -74,4 +74,12 @@ public interface PostMapper {
      * @return
      */
     Integer queryPostCount(@Param(value = "postsId") Integer postsId);
+
+    /**
+     * 查询所有帖子，用于首页刷新的操作。
+     * @param begin
+     * @param pageSize
+     * @return
+     */
+    List<Post> paginationQueryAllPostList(@Param(value = "begin") int begin, @Param(value = "pageSize") int pageSize);
 }

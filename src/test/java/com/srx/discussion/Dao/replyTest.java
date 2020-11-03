@@ -1,7 +1,7 @@
 package com.srx.discussion.Dao;
 
 import com.srx.discussion.BaseTest;
-import com.srx.discussion.Entities.Reply;
+import com.srx.discussion.Entities.base.Reply;
 import com.srx.discussion.Mappers.ReplyMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +29,9 @@ public class replyTest extends BaseTest {
     public void InsertReplyTest(){
         Reply reply=new Reply(2,3,"我觉的也是");
         Reply reply1=new Reply(2,3,2,"我觉的也是");
-        boolean b = mapper.insertReply(reply1);
-        System.out.println(b);
-        System.out.println(reply1);
+//        boolean b = mapper.insertReply(reply1);
+//        System.out.println(b);
+//        System.out.println(reply1);
     }
     @Test
     public void paginationQueryReplyListWithCommentTest(){

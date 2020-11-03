@@ -1,7 +1,7 @@
 package com.srx.discussion.Exceptions;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.utils.ExceptionUtil;

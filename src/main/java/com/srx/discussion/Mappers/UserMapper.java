@@ -1,10 +1,8 @@
 package com.srx.discussion.Mappers;
 
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToInfo;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToInfo;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * @author srx
@@ -83,14 +81,14 @@ public interface UserMapper {
      * @param userInfo
      * @return
      */
-    boolean updateUserInfo(@Param(value = "userInfo") UserToInfo userInfo);
+    boolean updateUserInfo(UserToInfo userInfo);
 
     /**
      * 插入用户信息
      * @param userInfo
      * @return
      */
-    boolean insertUserInfo(@Param(value = "userInfo") UserToInfo userInfo);
+    boolean insertUserInfo(UserToInfo userInfo);
 
     /**
      * 用于删除该用户的信息，主要与删除用户配合进行事务操作，而本系统暂时没有注销用户的功能，所以该方法暂时用不到

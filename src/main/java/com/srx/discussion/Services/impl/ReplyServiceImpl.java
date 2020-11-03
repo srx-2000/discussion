@@ -1,9 +1,10 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.Reply;
+import com.srx.discussion.Entities.base.Reply;
 import com.srx.discussion.Mappers.CommentMapper;
 import com.srx.discussion.Mappers.ReplyMapper;
 import com.srx.discussion.Services.ReplyService;
+import com.srx.discussion.Services.UserService;
 import com.srx.discussion.utils.ExceptionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,14 @@ public class ReplyServiceImpl implements ReplyService {
     private ReplyMapper replyMapper;
     @Autowired
     private CommentMapper commentMapper;
+    @Autowired
+    private UserService userService;
 
 
     @Override
-    public boolean insertReply(Reply reply) {
-        return replyMapper.insertReply(reply);
+    public Integer insertReply(Reply reply) {
+        replyMapper.insertReply(reply);
+        return reply.getReplyId();
     }
 
     @Override
@@ -37,6 +41,21 @@ public class ReplyServiceImpl implements ReplyService {
             ExceptionUtil.NullObjectException(commentMapper.queryCommentById(targetComment));
         return replyMapper.paginationQueryReplyListWithComment(targetComment, begin, pageSize);
     }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<Reply> queryReplyListWithComment(Integer targetComment) {
+        if (commentMapper.queryCommentById(targetComment) == null)
+            ExceptionUtil.NullObjectException(commentMapper.queryCommentById(targetComment));
+        List<Reply> replies = replyMapper.queryReplyListWithComment(targetComment);
+        for (Reply r : replies) {
+            String nickname = userService.queryUserNikeName(r.getReplyMan());
+            r.setreplyManNickname(nickname);
+//            Reply reply = new Reply(r.getReplyId(), r.getReplyMan(), r.getTargetComment(), r.getTargetReply(), r.getReplyContext(), r.getCreateTime(), r.getIsLive(), nickname);
+        }
+        return replies;
+    }
+
 
     @Override
     public Reply queryReplyById(Integer replyId) {
@@ -58,6 +77,7 @@ public class ReplyServiceImpl implements ReplyService {
 
     /**
      * 该方法主要用在commentService中进行事务的传递，用来从上到下的批量删除
+     *
      * @param targetComment
      * @return
      */

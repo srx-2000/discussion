@@ -1,8 +1,9 @@
 package com.srx.discussion.Services.impl;
 
-import com.srx.discussion.Entities.Posts;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToRole;
+import com.srx.discussion.Entities.base.Posts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToInfo;
+import com.srx.discussion.Entities.hybrid.UserToRole;
 import com.srx.discussion.Enums.Regex;
 import com.srx.discussion.Enums.UserRole;
 import com.srx.discussion.Mappers.PostsMapper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -155,14 +157,19 @@ public class PostsServiceImpl implements PostsService {
     }
 
     @Override
-    public List<User> queryRoleList(Integer postsId) {
+    public List<UserToInfo> queryRoleList(Integer postsId) {
         Posts posts = postsMapper.queryPostsById(postsId);
-        List<User> users = null;
+        List<UserToInfo> userToInfoList = new ArrayList<>();
         if (posts != null) {
-            users = userToRoleService.queryRoleList(postsId);
+            List<User> users = userToRoleService.queryRoleList(postsId);
+            for (User u :users) {
+                UserToInfo userToInfo = userService.queryUserInfoById(u.getUserId());
+                userToInfoList.add(userToInfo);
+            }
+
         } else
             ExceptionUtil.NullObjectException(posts);
-        return users;
+        return userToInfoList;
     }
 
     @Override

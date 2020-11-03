@@ -1,8 +1,8 @@
 package com.srx.discussion.Dao;
 
 import com.srx.discussion.BaseTest;
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToPosts;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToPosts;
 import com.srx.discussion.Mappers.UserToPostsMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

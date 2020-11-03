@@ -3,13 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.srx.discussion.Mappers.UserToRoleMapper">
-    <resultMap id="UserToRoleResult" type="com.srx.discussion.Entities.UserToRole">
+    <resultMap id="UserToRoleResult" type="com.srx.discussion.Entities.hybrid.UserToRole">
         <id property="userId" column="user_id"/>
         <id property="postsId" column="posts_id"/>
         <result property="status" column="status"/>
     </resultMap>
 
-    <resultMap id="UserResult" type="com.srx.discussion.Entities.User">
+    <resultMap id="UserResult" type="com.srx.discussion.Entities.base.User">
         <id property="userId" column="user_id"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
@@ -17,7 +17,7 @@
         <result property="authority" column="authority"/>
     </resultMap>
 
-    <resultMap id="PostsResult" type="com.srx.discussion.Entities.Posts">
+    <resultMap id="PostsResult" type="com.srx.discussion.Entities.base.Posts">
         <id property="postsId" column="posts_id"/>
         <result property="postsMan" column="posts_man"/>
         <result property="createTime" column="create_time"/>

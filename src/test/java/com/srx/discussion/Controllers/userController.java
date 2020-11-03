@@ -1,17 +1,14 @@
 package com.srx.discussion.Controllers;
 
 import com.srx.discussion.BaseTest;
-import com.srx.discussion.Entities.User;
+import com.srx.discussion.Entities.base.User;
 import com.srx.discussion.Services.PostsService;
 import com.srx.discussion.Services.UserService;
 import com.srx.discussion.utils.CommonControllerUtil;
 import com.srx.discussion.utils.PropertiesLoader;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 

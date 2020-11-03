@@ -1,7 +1,7 @@
 package com.srx.discussion.Services;
 
-import com.srx.discussion.Entities.User;
-import com.srx.discussion.Entities.UserToPost;
+import com.srx.discussion.Entities.base.User;
+import com.srx.discussion.Entities.hybrid.UserToPost;
 
 import java.util.List;
 
