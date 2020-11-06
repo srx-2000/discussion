@@ -18,6 +18,7 @@ public class Comment implements Serializable {
     private String createTime;
     private int targetPost;
     private String commentManUsername;
+    private Integer replyCount;
     private String isLive;
 
     public Comment(int commentId, String commentContext, int commentMan, String createTime, int targetPost, String commentManUsername, String isLive) {
@@ -28,6 +29,25 @@ public class Comment implements Serializable {
         this.targetPost = targetPost;
         this.commentManUsername = commentManUsername;
         this.isLive = isLive;
+    }
+
+    public Comment(int commentId, String commentContext, int commentMan, String createTime, int targetPost, String commentManUsername, Integer replyCount, String isLive) {
+        this.commentId = commentId;
+        this.commentContext = commentContext;
+        this.commentMan = commentMan;
+        this.createTime = createTime;
+        this.targetPost = targetPost;
+        this.commentManUsername = commentManUsername;
+        this.replyCount = replyCount;
+        this.isLive = isLive;
+    }
+
+    public Integer getReplyCount() {
+        return replyCount;
+    }
+
+    public void setReplyCount(Integer replyCount) {
+        this.replyCount = replyCount;
     }
 
     public Comment(int commentId, String commentContext, int commentMan, String createTime, int targetPost, String isLive) {

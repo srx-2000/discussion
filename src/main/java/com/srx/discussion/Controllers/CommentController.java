@@ -58,6 +58,7 @@ public class CommentController {
             map.put("belongPostsName",posts.getPostsTitle());
             map.put("postManNickname",PostNickname);
             map.put("postManId",post.getPostMan());
+            map.put("postCreateTime",post.getCreateTime());
             List<Comment> comments = commentService.paginationQueryCommentList(postId, currentPage, pageSize);
             for (Comment comment :comments) {
                 int commentManId = comment.getCommentMan();

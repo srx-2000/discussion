@@ -68,7 +68,11 @@ public class CommentServiceImpl implements CommentService {
         int begin = (currentPage - 1) * pageSize;
         if (post == null)
             ExceptionUtil.NullObjectException(post);
-        return mapper.paginationQueryCommentList(postId, begin, pageSize);
+        List<Comment> comments = mapper.paginationQueryCommentList(postId, begin, pageSize);
+        for (Comment c :comments) {
+            c.setReplyCount(replyService.queryReplyCount(c.getCommentId()));
+        }
+        return comments;
     }
 
     @Override

@@ -40,20 +40,21 @@ public class UserController {
     PropertiesLoader propertiesLoader = new PropertiesLoader("message.properties");
 
     @PostMapping(value = "/login")
-    public String login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws IOException {
+    @ResponseBody
+    public Integer login(@RequestParam String username, @RequestParam String password, HttpServletRequest request) throws IOException {
         User user = service.login(username, password);
         if (user != null && user.getAuthority().equals("1")) {
             HttpSession session = request.getSession();
             session.setMaxInactiveInterval(60 * 60 * 24);
             session.setAttribute("user", user);
-            return "userSuccess";
+            return user.getUserId();
         } else if (user != null && user.getAuthority().equals("0")) {
             HttpSession session = request.getSession();
             session.setMaxInactiveInterval(60 * 60 * 24);
             session.setAttribute("user", user);
-            return "adminSuccess";
+            return user.getUserId();
         } else {
-            return "index";
+            return 0;
         }
     }
 

@@ -50,6 +50,6 @@
     </update>
     <select id="paginationQueryAllPostList" resultMap="PostResult">
         <include refid="baseSelect"/>
-        where is_live=1 order by create_time desc limit #{begin},#{pageSize}
+        where is_live=1 order by create_time asc limit #{begin},#{pageSize}
     </select>
 </mapper>

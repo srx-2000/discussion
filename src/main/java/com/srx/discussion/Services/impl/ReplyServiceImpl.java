@@ -98,7 +98,7 @@ public class ReplyServiceImpl implements ReplyService {
             ExceptionUtil.NullObjectException(commentMapper.queryCommentById(commentId));
         }
         Integer replyCount = replyMapper.queryReplyCount(commentId);
-        if (replyCount <= 0)
+        if (replyCount < 0)
             ExceptionUtil.NumberLessThanZeroException(replyCount);
         return replyCount;
     }
