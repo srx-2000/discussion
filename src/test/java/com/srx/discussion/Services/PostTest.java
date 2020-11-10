@@ -21,10 +21,10 @@ public class PostTest {
     private PostService service;
     @Test
     public void updateIsLiveToDeleteTest(){
-        List<Post> posts = service.paginationQueryPostList("首页吧", 2, 2);
-        for (Post p:posts) {
-            System.out.println(p);
-        }
+//        List<Post> posts = service.paginationQueryPostList(1, 2, 2);
+//        for (Post p:posts) {
+//            System.out.println(p);
+//        }
     }
 
     @Test

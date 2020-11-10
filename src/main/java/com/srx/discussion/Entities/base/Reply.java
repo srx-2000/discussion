@@ -24,11 +24,24 @@ public class Reply implements Serializable {
     private String isLive;
     //该属性主要用作显示，也就是view层
     private String replyManNickname;
+    private String targetManNickname;
 
     public Reply(int replyMan, int targetComment, String replyContext) {
         this.replyMan = replyMan;
         this.targetComment = targetComment;
         this.replyContext = replyContext;
+    }
+
+    public Reply(int replyId, int replyMan, int targetComment, int targetReply, String replyContext, String createTime, String isLive, String replyManNickname, String targetManNickname) {
+        this.replyId = replyId;
+        this.replyMan = replyMan;
+        this.targetComment = targetComment;
+        this.targetReply = targetReply;
+        this.replyContext = replyContext;
+        this.createTime = createTime;
+        this.isLive = isLive;
+        this.replyManNickname = replyManNickname;
+        this.targetManNickname = targetManNickname;
     }
 
     public Reply(int replyMan, int targetComment, int targetReply, String replyContext) {
@@ -70,6 +83,37 @@ public class Reply implements Serializable {
         return targetComment;
     }
 
+    public String getReplyManNickname() {
+        return replyManNickname;
+    }
+
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "replyId=" + replyId +
+                ", replyMan=" + replyMan +
+                ", targetComment=" + targetComment +
+                ", targetReply=" + targetReply +
+                ", replyContext='" + replyContext + '\'' +
+                ", createTime='" + createTime + '\'' +
+                ", isLive='" + isLive + '\'' +
+                ", replyManNickname='" + replyManNickname + '\'' +
+                ", targetManNickname='" + targetManNickname + '\'' +
+                '}';
+    }
+
+    public void setReplyManNickname(String replyManNickname) {
+        this.replyManNickname = replyManNickname;
+    }
+
+    public String getTargetManNickname() {
+        return targetManNickname;
+    }
+
+    public void setTargetManNickname(String targetManNickname) {
+        this.targetManNickname = targetManNickname;
+    }
+
     public int getTargetReply() {
         return targetReply;
     }
@@ -78,13 +122,7 @@ public class Reply implements Serializable {
         this.targetReply = targetReply;
     }
 
-    public String getreplyManNickname() {
-        return replyManNickname;
-    }
 
-    public void setreplyManNickname(String replyManNickname) {
-        this.replyManNickname = replyManNickname;
-    }
 
     public int getReplyId() {
         return replyId;
@@ -126,27 +164,4 @@ public class Reply implements Serializable {
         this.isLive = isLive;
     }
 
-    @Override
-    public String toString() {
-        if (replyManNickname != null)
-            return "Reply{" +
-                    "replyId=" + replyId +
-                    ", replyMan=" + replyMan +
-                    ", targetComment=" + targetComment +
-                    ", targetReply=" + targetReply +
-                    ", replyContext='" + replyContext + '\'' +
-                    ", createTime='" + createTime + '\'' +
-                    ", isLive='" + isLive + '\'' +
-                    ", replyManNickname='" + replyManNickname + '\'' +
-                    '}';
-        return "Reply{" +
-                "replyId=" + replyId +
-                ", replyContext='" + replyContext + '\'' +
-                ", replyMan=" + replyMan +
-                ", createTime='" + createTime + '\'' +
-                ", isLive='" + isLive + '\'' +
-                ", targetComment=" + targetComment +
-                ", targetReply=" + targetReply +
-                '}';
-    }
 }

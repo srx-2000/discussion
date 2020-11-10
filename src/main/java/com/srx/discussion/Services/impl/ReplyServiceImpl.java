@@ -49,9 +49,14 @@ public class ReplyServiceImpl implements ReplyService {
             ExceptionUtil.NullObjectException(commentMapper.queryCommentById(targetComment));
         List<Reply> replies = replyMapper.queryReplyListWithComment(targetComment);
         for (Reply r : replies) {
+            String targetManNickname=null;
+            if (r.getTargetReply()!=0) {
+                Integer targetManId = replyMapper.queryReplyManId(r.getTargetReply());
+                targetManNickname = userService.queryUserNikeName(targetManId);
+            }
             String nickname = userService.queryUserNikeName(r.getReplyMan());
-            r.setreplyManNickname(nickname);
-//            Reply reply = new Reply(r.getReplyId(), r.getReplyMan(), r.getTargetComment(), r.getTargetReply(), r.getReplyContext(), r.getCreateTime(), r.getIsLive(), nickname);
+            r.setReplyManNickname(nickname);
+            r.setTargetManNickname(targetManNickname);
         }
         return replies;
     }

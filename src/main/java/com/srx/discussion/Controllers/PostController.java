@@ -42,16 +42,16 @@ public class PostController {
     /**
      * 该接口用于查询贴吧，并返回该贴吧的所有帖子，已经包含了分页查询
      *
-     * @param postsName
+     * @param postsId
      * @return
      */
     @GetMapping(value = "/f")
     @ResponseBody
-    public Map<String, Object> showPostLst(@RequestParam String postsName, @RequestParam int currentPage, @RequestParam int pageSize, HttpServletResponse response) {
+    public Map<String, Object> showPostList(@RequestParam Integer postsId, @RequestParam int currentPage, @RequestParam int pageSize, HttpServletResponse response) {
         Map<String, Object> map = new HashMap<>();
         try {
-            if (postsService.queryPostsByTitle(postsName) != null) {
-                map = CommonControllerUtil.CommonController(postService, "paginationQueryPostList", postsName, currentPage, pageSize);
+            if (postsService.queryPostsById(postsId) != null) {
+                map = CommonControllerUtil.CommonController(postService, "paginationQueryPostList", postsId, currentPage, pageSize);
             } else {
                 map.put("errorMessage.nofound.posts", propertiesLoader.getValue("errorMessage.nofound.posts"));
             }

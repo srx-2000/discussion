@@ -76,14 +76,18 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public List<Post> paginationQueryPostList(String postsName, Integer currentPage, Integer pageSize) {
-        Posts posts = postsMapper.queryPostsByTitle(postsName);
-        if (posts == null)
-            ExceptionUtil.NullObjectException(posts);
-        int postsId = posts.getPostsId();
+    public List<HybridPost> paginationQueryPostList(Integer postsId, Integer currentPage, Integer pageSize) {
         int begin = (currentPage - 1) * pageSize;
-        List<Post> postList = postMapper.paginationQueryPostList(postsId, begin, pageSize);
-        return postList;
+        ArrayList<HybridPost> hybridPostList = new ArrayList<>();
+        List<Post> postList = postMapper.paginationQueryPostList(postsId,begin, pageSize);
+        for (Post post : postList) {
+            String nickname = userService.queryUserNikeName(post.getPostMan());
+            String postsTitle = postsService.queryPostsById(post.getPostsId()).getPostsTitle();
+            Integer commentAndReplyCount = commentService.queryCommentAndReplyCount(post.getPostId());
+            HybridPost hybridPost = new HybridPost(post.getPostId(), post.getPostMan(), post.getPostsId(), post.getPostContext(), post.getCreateTime(), post.getPostTitle(), nickname, postsTitle, commentAndReplyCount, post.getIsLive());
+            hybridPostList.add(hybridPost);
+        }
+        return hybridPostList;
     }
 
     @Override

@@ -41,7 +41,7 @@ public interface PostMapper {
      * @param postsId
      * @return
      */
-    List<Post> paginationQueryPostList(@Param(value = "postsId") int postsId, @Param(value = "begin") int begin, @Param(value = "pageSize") int pageSize);
+    List<Post> paginationQueryPostList(@Param(value = "postsId") Integer postsId, @Param(value = "begin") int begin, @Param(value = "pageSize") int pageSize);
 
     /**
      * 根据给出的id查询并返回post

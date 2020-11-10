@@ -41,10 +41,10 @@ public interface PostService {
     /**
      * 查询帖子列表，用于显示所有帖子
      *
-     * @param postsName
+     * @param postsId
      * @return
      */
-    List<Post> paginationQueryPostList(String postsName, Integer currentPage, Integer pageSize);
+    List<HybridPost> paginationQueryPostList(Integer postsId, Integer currentPage, Integer pageSize);
 
 
     @Transactional(propagation = Propagation.REQUIRED)

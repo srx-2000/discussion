@@ -369,7 +369,8 @@ public class UserController {
                 Pyq pyq = new Pyq();
                 pyq.setPyqContext(pyqContext);
                 pyq.setUserId(user.getUserId());
-                map = CommonControllerUtil.CommonController(service, "insertPyq", pyq);
+                boolean b = service.insertPyq(pyq);
+                map.put("insertPyq",b);
             } else
                 map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
         } else {
