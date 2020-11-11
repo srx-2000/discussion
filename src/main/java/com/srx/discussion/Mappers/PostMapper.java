@@ -82,4 +82,11 @@ public interface PostMapper {
      * @return
      */
     List<Post> paginationQueryAllPostList(@Param(value = "begin") int begin, @Param(value = "pageSize") int pageSize);
+
+    /**
+     * 通过用户id查找该用户发送的所有的帖子，用于信息通知
+     * @param userId
+     * @return
+     */
+    List<Post> queryPostListByUserId(@Param(value = "userId") Integer userId);
 }

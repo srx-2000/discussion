@@ -67,6 +67,8 @@
     <select id="queryReplyListWithComment" resultMap="replyResult">
         select * from reply where target_comment=#{targetComment} and is_live=1
     </select>
-
+    <select id="queryReplyListByUserId" resultType="com.srx.discussion.Entities.base.Reply">
+        select * from reply where reply_man=#{userId} and is_live=1
+    </select>
 
 </mapper>

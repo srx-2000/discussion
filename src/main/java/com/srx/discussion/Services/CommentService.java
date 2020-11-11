@@ -1,6 +1,7 @@
 package com.srx.discussion.Services;
 
 import com.srx.discussion.Entities.base.Comment;
+import com.srx.discussion.Entities.base.Post;
 
 import java.util.List;
 
@@ -64,4 +65,6 @@ public interface CommentService {
      * @return
      */
     Integer queryCommentAndReplyCount(Integer postId);
+
+    List<Comment> queryCommentListByUserId(Integer userId);
 }

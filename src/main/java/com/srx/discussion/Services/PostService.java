@@ -2,6 +2,7 @@ package com.srx.discussion.Services;
 
 import com.srx.discussion.Entities.base.Post;
 import com.srx.discussion.Entities.hybrid.HybridPost;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,5 +74,12 @@ public interface PostService {
      * @return
      */
     Integer queryPostCount(Integer postsId);
+
+    /**
+     * 通过用户id查找该用户发送的所有的帖子，用于信息通知
+     * @param userId
+     * @return
+     */
+    List<Post> queryPostListByUserId(Integer userId);
 
 }

@@ -1,5 +1,6 @@
 package com.srx.discussion.Services.impl;
 
+import com.srx.discussion.Entities.base.Comment;
 import com.srx.discussion.Entities.base.Reply;
 import com.srx.discussion.Mappers.CommentMapper;
 import com.srx.discussion.Mappers.ReplyMapper;
@@ -106,5 +107,10 @@ public class ReplyServiceImpl implements ReplyService {
         if (replyCount < 0)
             ExceptionUtil.NumberLessThanZeroException(replyCount);
         return replyCount;
+    }
+
+    @Override
+    public List<Reply> queryReplyListByUserId(Integer userId) {
+        return replyMapper.queryReplyListByUserId(userId);
     }
 }

@@ -86,4 +86,10 @@ public class CommentServiceImpl implements CommentService {
         Integer commentCount = mapper.queryCommentCount(postId);
         return replyCount + commentCount;
     }
+
+
+    @Override
+    public List<Comment> queryCommentListByUserId(Integer userId) {
+        return mapper.queryCommentListByUserId(userId);
+    }
 }

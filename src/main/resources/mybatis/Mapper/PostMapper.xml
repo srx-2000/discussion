@@ -52,4 +52,9 @@
         <include refid="baseSelect"/>
         where is_live=1 order by create_time asc limit #{begin},#{pageSize}
     </select>
+    <select id="queryPostListByUserId" resultType="com.srx.discussion.Entities.base.Post">
+        select * from post where post_man=#{userId} and is_live=1
+    </select>
+
+
 </mapper>

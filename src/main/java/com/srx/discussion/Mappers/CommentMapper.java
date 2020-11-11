@@ -1,6 +1,7 @@
 package com.srx.discussion.Mappers;
 
 import com.srx.discussion.Entities.base.Comment;
+import com.srx.discussion.Entities.base.Post;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -82,6 +83,13 @@ public interface CommentMapper {
      * @return
      */
     List<Comment> queryCommentListByPostId(@Param(value = "postId") Integer postId);
+
+    /**
+     * 通过用户id查找该用户发送的所有的评论，用于信息通知
+     * @param userId
+     * @return
+     */
+    List<Comment> queryCommentListByUserId(@Param(value = "userId") Integer userId);
 
 
 }

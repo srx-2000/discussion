@@ -54,4 +54,8 @@
     <select id="queryCommentListByPostId" resultMap="CommentResult">
         select * from comment where target_post=#{postId}
     </select>
+    <select id="queryCommentListByUserId" resultType="com.srx.discussion.Entities.base.Comment">
+        select * from comment where comment_man=#{userId} and is_live=1
+    </select>
+
 </mapper>

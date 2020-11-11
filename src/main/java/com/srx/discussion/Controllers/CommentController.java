@@ -148,4 +148,23 @@ public class CommentController {
         }
         return map;
     }
+
+
+    @GetMapping(value = "/getCommentMessage")
+    @ResponseBody
+    public Map<String, Object> queryCommentListByUserId(HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null)
+            if (userService.queryUserById(user.getUserId()) != null)
+                map = CommonControllerUtil.CommonController(commentService, "queryCommentListByUserId", user.getUserId());
+            else {
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+            }
+        else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
 }

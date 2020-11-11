@@ -121,4 +121,9 @@ public class PostServiceImpl implements PostService {
     public Integer queryPostCount(Integer postsId) {
         return postMapper.queryPostCount(postsId);
     }
+
+    @Override
+    public List<Post> queryPostListByUserId(Integer userId) {
+        return postMapper.queryPostListByUserId(userId);
+    }
 }

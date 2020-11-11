@@ -197,4 +197,22 @@ public class ReplyContorller {
         }
         return map;
     }
+
+    @GetMapping(value = "/getReplyMessage")
+    @ResponseBody
+    public Map<String, Object> queryReplyListByUserId(HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        User user = (User) request.getSession().getAttribute("user");
+        if (user != null)
+            if (userService.queryUserById(user.getUserId()) != null)
+                map = CommonControllerUtil.CommonController(replyService, "queryReplyListByUserId", user.getUserId());
+            else {
+                map.put("errorMessage.nofound.user", propertiesLoader.getValue("errorMessage.nofound.user"));
+            }
+        else {
+            map.put("errorMessage.login", propertiesLoader.getValue("errorMessage.login"));
+        }
+        return map;
+    }
+
 }
